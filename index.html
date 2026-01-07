@@ -15,9 +15,6 @@
         #intro-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 1000; display: flex; align-items: center; justify-content: center; }
         .intro-box { background: #1a1a1a; padding: 25px; border: 2px solid #cfaf37; border-radius: 15px; max-width: 85%; text-align: right; }
         [dir="ltr"] .intro-box { text-align: left; }
-        .intro-box h2 { color: #f7ef8a; margin-top: 0; font-size: 20px; }
-        .intro-box ul { padding: 0; list-style: none; color: #ccc; font-size: 14px; line-height: 1.6; }
-        .intro-box ul li { margin-bottom: 8px; border-bottom: 1px dashed #333; padding-bottom: 5px; }
         #lang-btn { position: absolute; top: 10px; left: 10px; background: #222; color: #f7ef8a; border: 1px solid #cfaf37; padding: 5px 10px; border-radius: 5px; cursor: pointer; z-index: 1100; font-size: 12px; }
         [dir="ltr"] #lang-btn { left: auto; right: 10px; }
         #timer-box { font-size: 28px; font-weight: bold; margin: 10px 0; padding: 5px; border-radius: 5px; background: #111; display: inline-block; min-width: 120px; border: 1px solid #cfaf37; }
@@ -27,11 +24,11 @@
         #puzzle-board { display: grid; gap: 1px; margin: 10px auto; width: 92vw; height: 92vw; max-width: 420px; max-height: 420px; border: 2px solid #cfaf37; background: #000; }
         .tile { background-repeat: no-repeat; cursor: pointer; touch-action: none; border: 0.1px solid rgba(255,255,255,0.05); }
         .selected { border: 2px solid #f7ef8a !important; box-shadow: 0 0 15px #f7ef8a; z-index: 10; }
-        .btn { 
-            background: linear-gradient(180deg, #f7ef8a 0%, #cfaf37 100%); 
-            color: #000; border: none; padding: 12px 30px; font-size: 18px; font-weight: bold; 
-            border-radius: 25px; cursor: pointer; margin-top: 15px;
-        }
+        
+        .btn { background: linear-gradient(180deg, #f7ef8a 0%, #cfaf37 100%); color: #000; border: none; padding: 12px 30px; font-size: 18px; font-weight: bold; border-radius: 25px; cursor: pointer; margin-top: 15px; }
+        /* زر النجاح الأخضر */
+        .btn-next { background: linear-gradient(180deg, #2ecc71 0%, #27ae60 100%) !important; color: white !important; box-shadow: 0 0 20px #2ecc71; }
+        
         .hidden { display: none !important; }
         #level-info { background: #1a1a1a; padding: 10px; border-radius: 10px; margin-bottom: 5px; border-bottom: 2px solid #cfaf37; font-size: 14px; color: #f7ef8a; }
         #preview-img { width: 80%; max-width: 250px; border: 2px solid #cfaf37; border-radius: 10px; filter: blur(4px); margin-top: 10px; }
@@ -42,11 +39,11 @@
 <div id="intro-overlay">
     <div class="intro-box">
         <h2 id="intro-h">أهلاً بك في عالم Free Fire Token</h2>
-        <p id="intro-p" style="color:#f7ef8a">أنهِ المهام القادمة للحصول على مجوهرات مجانية!</p>
+        <p id="intro-p" style="color:#f7ef8a">أنهِ المهام للحصول على مجوهرات!</p>
         <ul id="rules-list">
-            <li>✅ يجب إنهاء 5 مراحل لتصل لصفحة الجوائز.</li>
-            <li>❌ يمنع الغش أو تصوير الشاشة (سيتم كشفك).</li>
-            <li>❌ إذا انتهى الوقت ستخسر المرحلة.</li>
+            <li>✅ إنهاء 5 مراحل للجوائز.</li>
+            <li>❌ يمنع تصوير الشاشة.</li>
+            <li>❌ خسارة عند انتهاء الوقت.</li>
         </ul>
         <button class="btn" onclick="closeIntro()" id="start-btn">بدء التحدي الآن</button>
     </div>
@@ -66,6 +63,7 @@
     <div id="game-screen" class="hidden">
         <div id="puzzle-board"></div>
         <p id="help-msg" style="font-size: 13px; color: #aaa;">اضغط على قطعتين لتبديل أماكنهما</p>
+        <button id="next-lvl-btn" class="btn btn-next hidden" onclick="goNextLevel()">انتقل للمرحلة التالية ➔</button>
     </div>
 
     <div id="fail-screen" class="hidden">
@@ -73,12 +71,9 @@
         <button class="btn" onclick="initLevel()" id="retry-btn">إعادة المحاولة</button>
     </div>
 
-    <div id="win-screen" class="hidden">
-        <h2 id="win-title" style="color: #00ff00;">تم إنجاز المرحلة بنجاح! 🏆</h2>
-    </div>
-
     <div id="final-screen" class="hidden">
         <h2 id="final-title" class="gold-text">🏆 أسطورة حقيقي! 🏆</h2>
+        <p id="final-p">لقد أكملت جميع المهام بنجاح</p>
         <a href="https://t.me/Free_Fire_121"><button class="btn" id="claim-btn">استلم جواهرك من هنا</button></a>
     </div>
 </div>
@@ -95,8 +90,8 @@
     let cur = 0, firstTile = null, timeLeft = 120, timerInterval = null, currentLang = 'ar';
 
     const texts = {
-        ar: { introH: "أهلاً بك في عالم Free Fire Token", introP: "أنهِ المهام للحصول على مجوهرات!", rules: "<li>✅ إنهاء 5 مراحل للجوائز.</li><li>❌ يمنع تصوير الشاشة.</li><li>❌ خسارة عند انتهاء الوقت.</li>", start: "بدء التحدي الآن", title: "Free Fire Token", lvl: "المرحلة", pcs: "القطع", pre: "احفظ الصورة.. ستختفي سريعاً!", help: "اضغط على قطعتين لتبديل أماكنهما", fail: "انتهى الوقت! ⏰", retry: "إعادة المحاولة", win: "تم إنجاز المرحلة بنجاح! 🏆", final: "🏆 أسطورة حقيقي! 🏆", claim: "استلم جواهرك من هنا", lang: "English" },
-        en: { introH: "Welcome to Free Fire Token", introP: "Finish missions for free gems!", rules: "<li>✅ Finish 5 stages for prizes.</li><li>❌ No screenshots allowed.</li><li>❌ Lose if time runs out.</li>", start: "Start Challenge", title: "Free Fire Token", lvl: "Level", pcs: "Pieces", pre: "Memorize the image!", help: "Swap two pieces", fail: "Time's up! ⏰", retry: "Retry", win: "Level Completed! 🏆", final: "🏆 A Legend! 🏆", claim: "Claim gems here", lang: "عربي" }
+        ar: { start: "بدء التحدي الآن", title: "Free Fire Token", lvl: "المرحلة", pcs: "القطع", pre: "احفظ الصورة.. ستختفي سريعاً!", help: "اضغط على قطعتين لتبديل أماكنهما", fail: "انتهى الوقت! ⏰", retry: "إعادة المحاولة", nextBtn: "انتقل للمرحلة التالية ➔", final: "🏆 أسطورة حقيقي! 🏆", claim: "استلم جواهرك من هنا", lang: "English" },
+        en: { start: "Start Challenge", title: "Free Fire Token", lvl: "Level", pcs: "Pieces", pre: "Memorize the image!", help: "Swap two pieces", fail: "Time's up! ⏰", retry: "Retry", nextBtn: "Go to Next Level ➔", final: "🏆 A Legend! 🏆", claim: "Claim gems here", lang: "عربي" }
     };
 
     function toggleLanguage() {
@@ -107,9 +102,6 @@
 
     function updateUI() {
         const t = texts[currentLang];
-        document.getElementById('intro-h').innerText = t.introH;
-        document.getElementById('intro-p').innerText = t.introP;
-        document.getElementById('rules-list').innerHTML = t.rules;
         document.getElementById('start-btn').innerText = t.start;
         document.getElementById('lang-btn').innerText = t.lang;
         document.getElementById('lvl-txt').innerText = t.lvl;
@@ -118,7 +110,7 @@
         document.getElementById('help-msg').innerText = t.help;
         document.getElementById('fail-title').innerText = t.fail;
         document.getElementById('retry-btn').innerText = t.retry;
-        document.getElementById('win-title').innerText = t.win;
+        document.getElementById('next-lvl-btn').innerText = t.nextBtn;
         document.getElementById('final-title').innerText = t.final;
         document.getElementById('claim-btn').innerText = t.claim;
     }
@@ -130,14 +122,14 @@
 
     function initLevel() {
         clearInterval(timerInterval);
+        firstTile = null;
         const l = levels[cur];
         document.getElementById('lvl').innerText = cur + 1;
         document.getElementById('pts').innerText = l.r * l.c;
         document.getElementById('preview-img').src = l.img;
-        
+        document.getElementById('next-lvl-btn').classList.add('hidden');
         document.getElementById('preview-screen').classList.remove('hidden');
         document.getElementById('game-screen').classList.add('hidden');
-        document.getElementById('win-screen').classList.add('hidden');
         document.getElementById('fail-screen').classList.add('hidden');
 
         setTimeout(() => {
@@ -174,8 +166,8 @@
         board.style.gridTemplateRows = `repeat(${l.r}, 1fr)`;
         board.style.gridTemplateColumns = `repeat(${l.c}, 1fr)`;
         board.innerHTML = '';
-        let pieces = Array.from({length: l.r * l.c}, (_, i) => i).sort(() => Math.random() - 0.5);
-        pieces.forEach((pos) => {
+        let piecesIndices = Array.from({length: l.r * l.c}, (_, i) => i).sort(() => Math.random() - 0.5);
+        piecesIndices.forEach((pos) => {
             const tile = document.createElement('div');
             tile.className = 'tile';
             tile.style.backgroundImage = `url(${l.img})`;
@@ -189,6 +181,7 @@
     }
 
     function onTileClick(tile) {
+        if (document.getElementById('next-lvl-btn').classList.contains('btn-next')) return; // منع اللعب بعد الفوز
         if (!firstTile) { firstTile = tile; tile.classList.add('selected'); }
         else {
             let bg1 = firstTile.style.backgroundPosition, cp1 = firstTile.dataset.correctPos;
@@ -203,17 +196,24 @@
 
     function checkWin() {
         const tiles = Array.from(document.querySelectorAll('.tile'));
-        if (tiles.every((t, i) => parseInt(t.dataset.correctPos) === i)) {
+        const isWin = tiles.every((t, i) => parseInt(t.dataset.correctPos) === i);
+        if (isWin) {
             clearInterval(timerInterval);
-            if (cur < levels.length - 1) {
-                document.getElementById('win-screen').classList.remove('hidden');
-                setTimeout(() => { cur++; initLevel(); }, 2000);
-            } else {
-                document.getElementById('game-screen').classList.add('hidden');
-                document.getElementById('final-screen').classList.remove('hidden');
-            }
+            document.getElementById('next-lvl-btn').classList.remove('hidden');
+            document.getElementById('next-lvl-btn').classList.add('btn-next');
         }
     }
+
+    function goNextLevel() {
+        if (cur < levels.length - 1) {
+            cur++;
+            initLevel();
+        } else {
+            document.getElementById('game-screen').classList.add('hidden');
+            document.getElementById('final-screen').classList.remove('hidden');
+        }
+    }
+
     window.onload = updateUI;
 </script>
 </body>
