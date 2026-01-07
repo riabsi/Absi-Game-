@@ -19,13 +19,12 @@
         .tile { background-repeat: no-repeat; border: 0.1px solid rgba(255,255,255,0.05); cursor: pointer; touch-action: none; }
         .selected { border: 2px solid #00ff00 !important; z-index: 10; box-shadow: 0 0 15px #00ff00; }
         
-        /* الزر الرمادي (مقفل) */
-        .btn-next { background: #555; color: #999; border: none; padding: 12px 25px; font-size: 18px; font-weight: bold; border-radius: 25px; cursor: not-allowed; margin-top: 15px; width: 80%; pointer-events: none; opacity: 0.6; transition: 0.3s; }
+        /* الزر الرمادي */
+        #next-level-btn { background: #333; color: #777; border: none; padding: 15px; font-size: 20px; font-weight: bold; border-radius: 30px; cursor: not-allowed; margin-top: 15px; width: 90%; pointer-events: none; transition: 0.4s; }
         
-        /* الزر الأخضر (مفتوح عند التجميع الصحيح) */
-        .btn-next.active { background: #28a745; color: white; cursor: pointer; pointer-events: auto; opacity: 1; box-shadow: 0 0 20px #28a745; border: 2px solid white; }
+        /* الزر الأخضر القوي */
+        #next-level-btn.success { background: #28a745 !important; color: white !important; cursor: pointer !important; pointer-events: auto !important; box-shadow: 0 0 25px #28a745; border: 2px solid white; opacity: 1; }
 
-        .btn-retry { background: #ff4500; color: white; border: none; padding: 12px 25px; font-size: 18px; font-weight: bold; border-radius: 25px; cursor: pointer; margin-top: 15px; }
         .hidden { display: none; }
         #level-info { background: #222; padding: 10px; border-radius: 10px; margin-bottom: 5px; border-bottom: 2px solid #ffd700; font-size: 14px; }
     </style>
@@ -35,7 +34,7 @@
 <div class="container">
     <button id="lang-btn" onclick="toggleLanguage()">English</button>
     <h1 id="main-title">Free Fire Token</h1>
-    <div id="level-info"><span id="lvl-txt">المرحلة</span>: <span id="lvl">1</span> | <span id="pcs-txt">القطع</span>: <span id="pts">12</span></div>
+    <div id="level-info">المرحلة: <span id="lvl">1</span> | القطع: <span id="pts">12</span></div>
     <div id="timer-box" class="timer-normal">02:00</div>
 
     <div id="preview-screen">
@@ -46,17 +45,17 @@
     <div id="game-screen" class="hidden">
         <div id="puzzle-board"></div>
         <p id="help-msg" style="font-size: 13px; color: #aaa;">اضغط على قطعتين لتبديل أماكنهما</p>
-        <button id="step-btn" class="btn-next" onclick="nextStage()">LEVEL 2</button>
+        <button id="next-level-btn" onclick="nextStage()">LEVEL 2</button>
     </div>
 
     <div id="fail-screen" class="hidden">
-        <h2 id="fail-title" style="color: #ff0000;">انتهى الوقت! ⏰</h2>
-        <button class="btn-retry" onclick="initLevel()">إعادة المحاولة</button>
+        <h2 style="color: #ff0000;">انتهى الوقت! ⏰</h2>
+        <button class="selected" style="padding: 10px 20px; background: orange; border-radius: 10px;" onclick="initLevel()">إعادة المحاولة</button>
     </div>
 
     <div id="final-screen" class="hidden">
-        <h2 id="final-title" style="color: #ffd700;">🏆 أسطورة حقيقي! 🏆</h2>
-        <a href="https://t.me/Free_Fire_121"><button class="btn-retry" style="background: goldenrod">استلم جواهرك من هنا</button></a>
+        <h2 style="color: #ffd700;">🏆 أسطورة حقيقي! 🏆</h2>
+        <a href="https://t.me/Free_Fire_121"><button style="padding: 15px; background: green; color: white; border-radius: 10px;">استلم جواهرك من هنا</button></a>
     </div>
 </div>
 
@@ -69,27 +68,7 @@
         { img: 'https://i.ibb.co/F42mpCrd/image.jpg', r: 10, c: 15 }
     ];
 
-    let cur = 0, firstTile = null, timeLeft = 120, timerInterval = null, currentLang = 'ar';
-
-    function toggleLanguage() {
-        currentLang = currentLang === 'ar' ? 'en' : 'ar';
-        document.getElementById('body-tag').dir = currentLang === 'ar' ? 'rtl' : 'ltr';
-        updateUI();
-    }
-
-    function updateUI() {
-        const t = {
-            ar: { title: "Free Fire Token", lvl: "المرحلة", pcs: "القطع", pre: "احفظ الصورة.. ستختفي سريعاً!", help: "اضغط على قطعتين لتبديل أماكنهما", fail: "انتهى الوقت! ⏰", lang: "English" },
-            en: { title: "Free Fire Token", lvl: "Level", pcs: "Pieces", pre: "Memorize the image!", help: "Swap two pieces", fail: "Time's up! ⏰", lang: "عربي" }
-        }[currentLang];
-        document.getElementById('main-title').innerText = t.title;
-        document.getElementById('lang-btn').innerText = t.lang;
-        document.getElementById('lvl-txt').innerText = t.lvl;
-        document.getElementById('pcs-txt').innerText = t.pcs;
-        document.getElementById('preview-msg').innerText = t.pre;
-        document.getElementById('help-msg').innerText = t.help;
-        document.getElementById('fail-title').innerText = t.fail;
-    }
+    let cur = 0, firstTile = null, timeLeft = 120, timerInterval = null;
 
     function initLevel() {
         clearInterval(timerInterval);
@@ -98,9 +77,9 @@
         document.getElementById('pts').innerText = l.r * l.c;
         document.getElementById('preview-img').src = l.img;
         
-        const sBtn = document.getElementById('step-btn');
-        sBtn.className = "btn-next"; // يرجع رمادي
-        sBtn.innerText = cur === levels.length - 1 ? "FINISH" : "LEVEL " + (cur + 2);
+        const btn = document.getElementById('next-level-btn');
+        btn.className = ""; // تصفير الكلاسات
+        btn.innerText = cur === levels.length - 1 ? "CLAIM REWARD" : "LEVEL " + (cur + 2);
 
         document.getElementById('preview-screen').classList.remove('hidden');
         document.getElementById('game-screen').classList.add('hidden');
@@ -114,66 +93,80 @@
         }, 3000);
     }
 
-    function startTimer() {
-        timeLeft = 120;
-        updateTimerDisplay();
-        timerInterval = setInterval(() => {
-            timeLeft--;
-            updateTimerDisplay();
-            if (timeLeft <= 0) {
-                clearInterval(timerInterval);
-                document.getElementById('game-screen').classList.add('hidden');
-                document.getElementById('fail-screen').classList.remove('hidden');
-            }
-        }, 1000);
-    }
-
-    function updateTimerDisplay() {
-        const m = Math.floor(timeLeft / 60), s = timeLeft % 60;
-        const box = document.getElementById('timer-box');
-        box.innerText = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
-        box.className = timeLeft <= 30 ? 'timer-danger' : 'timer-normal';
-    }
-
     function createBoard() {
         const l = levels[cur], board = document.getElementById('puzzle-board');
         board.style.gridTemplateRows = `repeat(${l.r}, 1fr)`;
         board.style.gridTemplateColumns = `repeat(${l.c}, 1fr)`;
         board.innerHTML = '';
-        let indices = Array.from({length: l.r * l.c}, (_, i) => i).sort(() => Math.random() - 0.5);
-        indices.forEach(pos => {
+        
+        // إنشاء القطع بالترتيب الصحيح أولاً
+        let pieces = [];
+        for (let i = 0; i < l.r * l.c; i++) pieces.push(i);
+        
+        // خلط القطع
+        let shuffled = [...pieces].sort(() => Math.random() - 0.5);
+
+        shuffled.forEach(id => {
             const tile = document.createElement('div');
             tile.className = 'tile';
             tile.style.backgroundImage = `url(${l.img})`;
             tile.style.backgroundSize = `${l.c * 100}% ${l.r * 100}%`;
-            let r = Math.floor(pos / l.c), c = pos % l.c;
-            tile.style.backgroundPosition = `${(c / (l.c - 1)) * 100}% ${(r / (l.r - 1)) * 100}%`;
-            tile.dataset.pos = pos;
+            
+            let correctRow = Math.floor(id / l.c);
+            let correctCol = id % l.c;
+            tile.style.backgroundPosition = `${(correctCol / (l.c - 1)) * 100}% ${(correctRow / (l.r - 1)) * 100}%`;
+            
+            tile.dataset.currentId = id; // المعرف الرقمي للقطعة
+            
             tile.onclick = () => {
-                if (document.getElementById('step-btn').classList.contains('active')) return; 
-                if (!firstTile) { firstTile = tile; tile.classList.add('selected'); }
-                else {
-                    let bgp = firstTile.style.backgroundPosition, p = firstTile.dataset.pos;
+                if (!firstTile) {
+                    firstTile = tile;
+                    tile.classList.add('selected');
+                } else {
+                    // تبديل البيانات
+                    let tempId = firstTile.dataset.currentId;
+                    let tempBgP = firstTile.style.backgroundPosition;
+
+                    firstTile.dataset.currentId = tile.dataset.currentId;
                     firstTile.style.backgroundPosition = tile.style.backgroundPosition;
-                    firstTile.dataset.pos = tile.dataset.pos;
-                    tile.style.backgroundPosition = bgp;
-                    tile.dataset.pos = p;
-                    firstTile.classList.remove('selected'); firstTile = null;
-                    checkCompletion();
+
+                    tile.dataset.currentId = tempId;
+                    tile.style.backgroundPosition = tempBgP;
+
+                    firstTile.classList.remove('selected');
+                    firstTile = null;
+                    checkWin(); // فحص الفوز بعد كل حركة
                 }
             };
             board.appendChild(tile);
         });
     }
 
-    function checkCompletion() {
+    function checkWin() {
         const tiles = Array.from(document.querySelectorAll('.tile'));
-        const isComplete = tiles.every((t, i) => parseInt(t.dataset.pos) === i);
-        if (isComplete) {
-            clearInterval(timerInterval); // إيقاف الوقت عند النجاح
-            const btn = document.getElementById('step-btn');
-            btn.classList.add('active'); // تحويل الزر للأخضر وتفعيله
+        // الفحص يعتمد على الـ ID الرقمي فقط لضمان الدقة
+        const win = tiles.every((tile, index) => parseInt(tile.dataset.currentId) === index);
+        
+        if (win) {
+            clearInterval(timerInterval);
+            const btn = document.getElementById('next-level-btn');
+            btn.classList.add('success'); // تحويل للأخضر
+            console.log("تم التجميع بنجاح!");
         }
+    }
+
+    function startTimer() {
+        timeLeft = 120;
+        timerInterval = setInterval(() => {
+            timeLeft--;
+            let m = Math.floor(timeLeft / 60), s = timeLeft % 60;
+            document.getElementById('timer-box').innerText = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+            if (timeLeft <= 0) {
+                clearInterval(timerInterval);
+                document.getElementById('game-screen').classList.add('hidden');
+                document.getElementById('fail-screen').classList.remove('hidden');
+            }
+        }, 1000);
     }
 
     function nextStage() {
