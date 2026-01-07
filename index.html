@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Free Fire Challenge Pro</title>
+    <title>Real Diamond _ free fire</title>
     <style>
         :root {
             --primary: #ffd700;
@@ -22,7 +22,7 @@
             user-select: none;
         }
 
-        /* شاشة الإرشادات الفخمة */
+        /* شاشة الإرشادات */
         #overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.9);
@@ -43,9 +43,10 @@
         h1 { 
             color: var(--primary); 
             text-transform: uppercase;
-            letter-spacing: 2px;
+            letter-spacing: 1px;
             text-shadow: 0 0 10px var(--secondary);
             margin: 10px 0;
+            font-size: 22px;
         }
 
         .stats-bar {
@@ -81,7 +82,6 @@
         .tile:active { transform: scale(0.95); }
         .selected { border: 2px solid var(--primary) !important; z-index: 10; box-shadow: 0 0 15px var(--primary); }
         
-        /* Next Level Button Styling */
         .btn-main { 
             background: #333; color: #666; border: none; padding: 16px; 
             font-size: 18px; font-weight: bold; border-radius: 50px; 
@@ -112,19 +112,19 @@
 <div id="overlay">
     <div class="modal">
         <h2>SOLDIER! 🎖️</h2>
-        <p>Follow these instructions to win:</p>
+        <p>Instructions for <b>Real Diamond</b>:</p>
         <ul>
             <li>📌 Memorize the image in <b>3 seconds</b>.</li>
             <li>📌 Swap pieces to rebuild the photo.</li>
             <li>📌 Finish before the <b>2-minute</b> timer ends.</li>
-            <li>📌 The <b>Next Level</b> button unlocks only when 100% complete.</li>
+            <li>📌 The <b>Next Mission</b> button unlocks only when 100% complete.</li>
         </ul>
         <button class="btn-retry" style="background: var(--primary); color: black;" onclick="closeInstructions()">START MISSION</button>
     </div>
 </div>
 
 <div class="container">
-    <h1>Token Challenge</h1>
+    <h1>Real Diamond _ free fire</h1>
     
     <div class="stats-bar">
         <div>LEVEL: <span id="lvl" style="color:var(--primary)">1</span></div>
@@ -132,7 +132,7 @@
     </div>
 
     <div id="preview-screen">
-        <p style="color:var(--primary)">Get Ready! Memorizing...</p>
+        <p style="color:var(--primary)">Memorize the image...</p>
         <img id="preview-img" src="">
     </div>
 
@@ -148,8 +148,8 @@
 
     <div id="final-screen" class="hidden">
         <h2 style="color: var(--primary);">🏆 SUPREME COMMANDER! 🏆</h2>
-        <p>You have completed all levels.</p>
-        <a href="https://t.me/Free_Fire_121"><button class="btn-retry" style="background:var(--primary); color:black">COLLECT BOOYAH!</button></a>
+        <p>Mission Accomplished.</p>
+        <a href="https://t.me/Free_Fire_121"><button class="btn-retry" style="background:var(--primary); color:black">COLLECT DIAMONDS</button></a>
     </div>
 </div>
 
@@ -263,7 +263,6 @@
             document.getElementById('final-screen').classList.remove('hidden');
         }
     }
-
 </script>
 </body>
 </html>
