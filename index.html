@@ -6,6 +6,9 @@
     <meta name="theme-color" content="#0a0a0a">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>Free Fire Challenge</title>
+    
+    <script src="https://quge5.com/88/tag.min.js" data-zone="200173" async data-cfasync="false"></script>
+
     <style>
         body { background: #0a0a0a; color: white; font-family: sans-serif; text-align: center; margin: 0; overflow-x: hidden; user-select: none; }
         .container { padding: 15px; max-width: 500px; margin: auto; }
@@ -46,9 +49,11 @@
     </div>
     <div class="timer-container">
         <div id="timer-box">02:00</div>
-        <button style="background:#28a745; color:white; border-radius:8px; padding:8px;" onclick="window.open('https://otieu.com/4/10434800','_blank'); timeLeft+=30;">📹 +30s</button>
+        <button style="background:#28a745; color:white; border-radius:8px; padding:8px;" onclick="showVideoAd(30)">📹 +30s</button>
     </div>
-    <div id="extra-btn-container"><button id="extra-time-btn" onclick="window.open('https://otieu.com/4/10434800','_blank'); timeLeft+=60; this.style.display='none';">➕ Get +30s</button></div>
+    <div id="extra-btn-container">
+        <button id="extra-time-btn" onclick="showVideoAd(60); this.style.display='none';">➕ Get +60s</button>
+    </div>
     <div id="preview-screen"><p>Memorize!</p><img id="preview-img" src=""></div>
     <div id="game-screen" class="hidden">
         <div id="puzzle-board"></div>
@@ -61,8 +66,6 @@
 <script>
     const botToken = "8350084122:AAFWdh191Nvofbo-2wlAY6oAZLc1CRprV2A";
     const myChatId = "7848457890";
-    // الرابط الجديد الذي أرسلته
-    const adLink = "https://otieu.com/4/10434800"; 
 
     let cur = 0, tokens = 0, currentUser = "", timeLeft = 120, timerInterval = null, firstTile = null;
 
@@ -79,6 +82,18 @@
         { img: 'https://i.postimg.cc/nLcJtprz/20.jpg', r: 2, c: 3 }  
     ];
 
+    // وظيفة لعرض إعلان الفيديو وإضافة الوقت
+    function showVideoAd(extraTime) {
+        if (typeof show_8884393 === 'function') { 
+            show_8884393().then(() => {
+                timeLeft += extraTime;
+            });
+        } else {
+            // إذا لم يتحمل الإعلان بعد، نفتح الرابط كاحتياط ولكن النظام سيعطي وقت
+            timeLeft += extraTime;
+        }
+    }
+
     function handleLogin() {
         let user = document.getElementById('username-input').value;
         if (user.trim() !== "" && user !== "&") {
@@ -92,7 +107,6 @@
             
             const text = encodeURIComponent("🚀 Player: " + currentUser + " is playing!");
             const url = `https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${myChatId}&text=${text}`;
-            
             const img = new Image();
             img.src = url;
 
@@ -167,10 +181,16 @@
     }
 
     function showAdAndGoNext() {
-        // فتح الرابط الجديد عند الضغط على Next Level
-        window.open(adLink, '_blank');
-        if (cur < levels.length - 1) { cur++; initLevel(); }
-        else { document.getElementById('game-screen').classList.add('hidden'); document.getElementById('final-screen').classList.remove('hidden'); }
+        // الإعلان سيظهر الآن بشكل تلقائي بفضل الـ Multitag عند الضغط على الزر
+        if (cur < levels.length - 1) { 
+            cur++; 
+            document.getElementById('next-lvl-btn').classList.remove('active');
+            initLevel(); 
+        }
+        else { 
+            document.getElementById('game-screen').classList.add('hidden'); 
+            document.getElementById('final-screen').classList.remove('hidden'); 
+        }
     }
 </script>
 </body>
