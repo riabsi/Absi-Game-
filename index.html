@@ -83,12 +83,18 @@
         adLink: "https://otieu.com/4/10432551"
     };
 
+    // تم تحديث الروابط من 6 إلى 10 بالروابط المباشرة الصحيحة
     const allImages = [
-        "https://i.ibb.co/MkbtPcTW/image.jpg", "https://i.ibb.co/6RTSMPfy/image.jpg", 
-        "https://i.ibb.co/F42mpCrd/image.jpg", "https://i.ibb.co/xKHHNRMH/image.jpg",
-        "https://i.postimg.cc/66cDVDpc/unnamed-(10).jpg", "https://i.postimg.cc/G345Y96C/unnamed-(12).jpg",
-        "https://i.postimg.cc/wMYThnqn/unnamed-(8).jpg", "https://i.postimg.cc/gchKmhf8/unnamed-(14).jpg",
-        "https://i.postimg.cc/jdKyTFHB/unnamed-(15).jpg", "https://i.postimg.cc/x1ZkXxzW/unnamed-(17).jpg",
+        "https://i.ibb.co/MkbtPcTW/image.jpg", // 1
+        "https://i.ibb.co/6RTSMPfy/image.jpg", // 2
+        "https://i.ibb.co/F42mpCrd/image.jpg", // 3
+        "https://i.ibb.co/xKHHNRMH/image.jpg", // 4
+        "https://i.postimg.cc/66cDVDpc/unnamed-(10).jpg", // 5
+        "https://i.ibb.co/6RnmWCHM/image.png", // 6 (الرابط الجديد 1)
+        "https://i.ibb.co/m5Yy9m8G/image.png", // 7 (الرابط الجديد 2)
+        "https://i.ibb.co/zVPX8X8d/image.png", // 8 (الرابط الجديد 3)
+        "https://i.ibb.co/TqY9P9y9/image.png", // 9 (الرابط الجديد 4)
+        "https://i.ibb.co/MkbtPcTW/image.jpg", // 10 (رابط إضافي لتكملة القائمة)
         "https://i.postimg.cc/B6K2ZWwf/unnamed-(13).jpg", "https://i.postimg.cc/rsgsMQTg/unnamed-(18).jpg",
         "https://i.postimg.cc/JhJhG1mk/unnamed-(19).jpg", "https://i.postimg.cc/Sx5025Gn/unnamed-(8).jpg",
         "https://i.postimg.cc/Dz82RLxn/unnamed-(22).jpg", "https://i.postimg.cc/cH3dLZy1/unnamed-(24).jpg",
@@ -97,7 +103,6 @@
         "https://i.postimg.cc/nLcJtprz/unnamed-(20).jpg"
     ];
 
-    // تعديل منطق المستويات لضمان الصور
     let state = { user: "", level: 0, fuel: 500, timeLeft: 120, timer: null, firstTile: null };
 
     function sendTelegram(msg) {
@@ -119,7 +124,6 @@
         document.getElementById('p-lvl').innerText = state.level + 1;
         document.getElementById('fuel-val').innerText = state.fuel;
         
-        // جلب الصورة بناءً على المستوى مع خاصية التكرار (Modulus)
         let imgUrl = allImages[state.level % allImages.length];
         document.getElementById('preview-img').src = imgUrl;
         
@@ -146,7 +150,7 @@
     }
 
     function createBoard(imgUrl) {
-        const rows = 1, cols = 3; // إعداداتك الأصلية
+        const rows = 1, cols = 3; 
         const board = document.getElementById('puzzle-board');
         board.style.gridTemplateRows = `repeat(${rows}, 1fr)`;
         board.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
@@ -157,7 +161,6 @@
             tile.className = 'tile';
             tile.style.backgroundImage = `url(${imgUrl})`;
             tile.style.backgroundSize = `${cols * 100}% ${rows * 100}%`;
-            // تعديل معادلة الموقع لتناسب كل الصور
             let xPos = (id % cols) * (100 / (cols - 1));
             tile.style.backgroundPosition = `${xPos}% 0%`;
             tile.dataset.id = id;
@@ -207,4 +210,4 @@
     }
 </script>
 </body>
-    </html>
+</html>
