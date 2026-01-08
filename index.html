@@ -82,18 +82,12 @@
     // رابط المونتاج الخاص بك
     const myDirectLink = "https://otieu.com/4/10432551"; 
 
-    // تم تحديث الفقرة هنا لتصبح 10 مراحل وبسهولة (1 صف و 3 أعمدة)
     const levels = [
-        { img: 'https://i.ibb.co/MkbtPcTW/image.jpg', r: 1, c: 3 },
-        { img: 'https://i.ibb.co/6RTSMPfy/image.jpg', r: 1, c: 3 },
-        { img: 'https://i.ibb.co/F42mpCrd/image.jpg', r: 1, c: 3 },
-        { img: 'https://i.ibb.co/xKHHNRMH/image.jpg', r: 1, c: 3 },
-        { img: 'https://i.ibb.co/MkbtPcTW/image.jpg', r: 1, c: 3 },
-        { img: 'https://i.ibb.co/6RnmWCHM/image.png', r: 1, c: 3 },
-        { img: 'https://i.ibb.co/m5Yy9m8G/image.png', r: 1, c: 3 },
-        { img: 'https://i.ibb.co/zVPX8X8d/image.png', r: 1, c: 3 },
-        { img: 'https://i.ibb.co/TqY9P9y9/image.png', r: 1, c: 3 },
-        { img: 'https://i.ibb.co/MkbtPcTW/image.jpg', r: 1, c: 3 }
+        { img: 'https://i.ibb.co/MkbtPcTW/image.jpg', r: 3, c: 4 },
+        { img: 'https://i.ibb.co/6RTSMPfy/image.jpg', r: 2, c: 6 },
+        { img: 'https://i.ibb.co/F42mpCrd/image.jpg', r: 2, c: 8 },
+        { img: 'https://i.ibb.co/xKHHNRMH/image.jpg', r: 2, c: 12 },
+        { img: 'https://i.ibb.co/F42mpCrd/image.jpg', r: 10, c: 15 }
     ];
 
     let cur = 0, firstTile = null, timeLeft = 120, timerInterval = null;
@@ -130,6 +124,7 @@
             const box = document.getElementById('timer-box');
             box.innerText = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
             
+            // تعديل: الزر سيظهر عند 40 ثانية ليكون أوضح
             if (timeLeft <= 40 && timeLeft > 0) {
                 box.className = 'timer-danger';
                 document.getElementById('extra-time-btn').style.display = 'inline-block';
@@ -147,8 +142,10 @@
     }
 
     function addTimeWithAd() {
+        // محاولة فتح الإعلان
         const adWindow = window.open(myDirectLink, '_blank');
         if (!adWindow) {
+            // إذا حظر التيليجرام النافذة، نفتح الرابط مباشرة
             window.location.href = myDirectLink;
         }
         timeLeft += 60;
@@ -203,7 +200,9 @@
     }
 
     function showAdAndGoNext() {
+        // محاولة فتح الإعلان
         const adWindow = window.open(myDirectLink, '_blank');
+        
         if (cur < levels.length - 1) {
             cur++;
             initLevel();
