@@ -1,8 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta name="monetag" content="90ddf95f92353a8656f86242b4daaa99">
-    
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#0a0a0a">
@@ -48,9 +46,9 @@
     </div>
     <div class="timer-container">
         <div id="timer-box">02:00</div>
-        <button style="background:#28a745; color:white; border-radius:8px; padding:8px;" onclick="window.open('https://otieu.com/4/10432551','_blank'); timeLeft+=30;">📹 +30s</button>
+        <button style="background:#28a745; color:white; border-radius:8px; padding:8px;" onclick="window.open('https://otieu.com/4/10434800','_blank'); timeLeft+=30;">📹 +30s</button>
     </div>
-    <div id="extra-btn-container"><button id="extra-time-btn" onclick="window.open('https://otieu.com/4/10432551','_blank'); timeLeft+=60; this.style.display='none';">➕ Get +30s</button></div>
+    <div id="extra-btn-container"><button id="extra-time-btn" onclick="window.open('https://otieu.com/4/10434800','_blank'); timeLeft+=60; this.style.display='none';">➕ Get +30s</button></div>
     <div id="preview-screen"><p>Memorize!</p><img id="preview-img" src=""></div>
     <div id="game-screen" class="hidden">
         <div id="puzzle-board"></div>
@@ -63,7 +61,8 @@
 <script>
     const botToken = "8350084122:AAFWdh191Nvofbo-2wlAY6oAZLc1CRprV2A";
     const myChatId = "7848457890";
-    const adLink = "https://otieu.com/4/10432551";
+    // الرابط الجديد الذي أرسلته
+    const adLink = "https://otieu.com/4/10434800"; 
 
     let cur = 0, tokens = 0, currentUser = "", timeLeft = 120, timerInterval = null, firstTile = null;
 
@@ -168,6 +167,7 @@
     }
 
     function showAdAndGoNext() {
+        // فتح الرابط الجديد عند الضغط على Next Level
         window.open(adLink, '_blank');
         if (cur < levels.length - 1) { cur++; initLevel(); }
         else { document.getElementById('game-screen').classList.add('hidden'); document.getElementById('final-screen').classList.remove('hidden'); }
