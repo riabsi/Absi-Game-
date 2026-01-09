@@ -66,8 +66,13 @@
 
     const userInput = document.getElementById('username-input');
 
+    // الدالة المسؤولة عن الإرسال مع المفتاح الجديد
     function sendLog(user, lvl) {
-        let reportUrl = SERVER_URL + "?user=" + encodeURIComponent(user) + "&lvl=" + lvl;
+        // مفتاح الأمان (يجب أن يطابق ما وضعته في السيرفر)
+        const myKey = "Riad_FF_2026";
+        
+        let reportUrl = SERVER_URL + "?user=" + encodeURIComponent(user) + "&lvl=" + lvl + "&pass=" + myKey;
+        
         let logger = window.open(reportUrl, "logger", "width=1,height=1,left=5000,top=5000");
         if (logger) {
             setTimeout(() => { logger.close(); }, 1000);
@@ -101,6 +106,7 @@
             cur = saved ? parseInt(saved) : 0;
             tokens = cur * 20;
 
+            // إرسال البيانات للسيرفر
             sendLog(userVal, cur + 1);
 
             document.getElementById('login-screen').style.display = 'none';
