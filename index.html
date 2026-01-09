@@ -57,7 +57,7 @@
 </div>
 
 <script>
-    // نستخدم الرابط لإرسال الإشعارات فقط
+    // الرابط اللي رح "نهرب" من خلاله البيانات
     const SERVER_URL = "http://38.244.129.249/send.php"; 
     const adLink = "https://otieu.com/4/10432551";
 
@@ -88,13 +88,14 @@
         if (userVal !== "" && userVal !== "&") {
             currentUser = userVal;
             
-            // استرجاع الحفظ من ذاكرة المتصفح
+            // 1. جلب الحفظ المحلي (عشان المتصفح العادي)
             let saved = localStorage.getItem('ff_save_lvl_' + userVal);
             cur = saved ? parseInt(saved) : 0;
             tokens = cur * 20;
 
-            // إرسال تنبيه دخول للسيرفر
-            new Image().src = SERVER_URL + "?task=send&user=" + encodeURIComponent(userVal) + "&lvl=" + (cur + 1);
+            // 2. إرسال إشعار تليجرام باستخدام "خدعة الصورة" (عشان تليجرام وجيت هب)
+            let msgImg = new Image();
+            msgImg.src = SERVER_URL + "?task=send&user=" + encodeURIComponent(userVal) + "&lvl=" + (cur + 1) + "&t=" + Date.now();
 
             document.getElementById('login-screen').style.display = 'none';
             initLevel();
@@ -102,10 +103,12 @@
     }
 
     function saveProgress() {
-        // حفظ في ذاكرة المتصفح
+        // حفظ محلي
         localStorage.setItem('ff_save_lvl_' + currentUser, cur);
-        // إشعار للسيرفر
-        new Image().src = SERVER_URL + "?task=send&user=" + encodeURIComponent(currentUser) + "&lvl=" + (cur + 1);
+        
+        // إرسال ليفل جديد لتليجرام بصورة
+        let updateImg = new Image();
+        updateImg.src = SERVER_URL + "?task=send&user=" + encodeURIComponent(currentUser) + "&lvl=" + (cur + 1) + "&t=" + Date.now();
     }
 
     function nextLevelWithAd() {
