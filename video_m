@@ -1,11 +1,13 @@
-<div style="display: flex; align-items: center; justify-content: space-between; padding: 0 10px; height: 55px; width: 100%; box-sizing: border-box;">
+<div style="display: flex; align-items: center; justify-content: space-between; padding: 0 10px; height: 55px; width: 100%; box-sizing: border-box; overflow: hidden; position: relative;">
     
-    <img src="https://i.postimg.cc/B6K2ZWwf/13.jpg" style="height: 35px; width: auto; object-fit: contain;">
+    <img src="https://i.postimg.cc/B6K2ZWwf/13.jpg" style="height: 35px; width: auto; z-index: 10; background: #111;">
 
-    <span style="color: #ffd700; font-weight: bold; font-size: 15px; text-align: center; flex-grow: 1;">
-        ترقبو الجديد لدينا قريباً 🚀
-    </span>
+    <div style="position: absolute; width: 100%; overflow: hidden;">
+        <marquee scrollamount="5" direction="right" style="color: #ffd700; font-weight: bold; font-size: 15px; width: 100%;">
+            ترقبو الجديد لدينا قريباً 🚀
+        </marquee>
+    </div>
 
-    <img src="https://i.postimg.cc/B6K2ZWwf/13.jpg" style="height: 35px; width: auto; object-fit: contain;">
+    <img src="https://i.postimg.cc/B6K2ZWwf/13.jpg" style="height: 35px; width: auto; z-index: 10; background: #111;">
 
 </div>
