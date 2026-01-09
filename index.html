@@ -3,8 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="theme-color" content="#0a0a0a">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>Free Fire Challenge</title>
     <style>
         body { background: #0a0a0a; color: white; font-family: sans-serif; text-align: center; margin: 0; overflow-x: hidden; user-select: none; }
@@ -46,10 +44,10 @@
     </div>
     <div class="timer-container">
         <div id="timer-box">02:00</div>
-        <button style="background:#28a745; color:white; border-radius:8px; padding:8px;" onclick="openAdsAndAddSeconds(30)">📹 +30s</button>
+        <button style="background:#28a745; color:white; border-radius:8px; padding:8px;" onclick="window.open('https://otieu.com/4/10432551','_blank'); window.open('https://www.effectivegatecpm.com/xg01t7c9?key=d0c325bc75b64a98c9360bc5673f06c4','_blank'); timeLeft+=30;">📹 +30s</button>
     </div>
     <div id="extra-btn-container">
-        <button id="extra-time-btn" onclick="openAdsAndAddSeconds(60); this.style.display='none';">⚠️ Get +60s</button>
+        <button id="extra-time-btn" onclick="window.open('https://otieu.com/4/10432551','_blank'); window.open('https://www.effectivegatecpm.com/xg01t7c9?key=d0c325bc75b64a98c9360bc5673f06c4','_blank'); timeLeft+=60; this.style.display='none';">⚠️ Get +60s</button>
     </div>
     <div id="preview-screen"><p>Memorize!</p><img id="preview-img" src=""></div>
     <div id="game-screen" class="hidden">
@@ -61,18 +59,13 @@
 </div>
 
 <script>
+    // الرابط اللي رح "نهرب" من خلاله البيانات
     const SERVER_URL = "http://38.244.129.249/send.php"; 
     const adLink = "https://otieu.com/4/10432551";
+    // الرابط الجديد
     const newAdLink = "https://www.effectivegatecpm.com/xg01t7c9?key=d0c325bc75b64a98c9360bc5673f06c4";
 
     let cur = 0, tokens = 0, currentUser = "", timeLeft = 120, timerInterval = null, firstTile = null;
-
-    // دالة جديدة لفتح الإعلانات دون التأثير على الرسائل
-    function openAdsAndAddSeconds(seconds) {
-        window.open(adLink, '_blank');
-        setTimeout(() => { window.open(newAdLink, '_blank'); }, 200);
-        timeLeft += seconds;
-    }
 
     const userInput = document.getElementById('username-input');
     userInput.addEventListener('input', function() {
@@ -98,11 +91,13 @@
         let userVal = userInput.value.trim();
         if (userVal !== "" && userVal !== "&") {
             currentUser = userVal;
+            
+            // 1. جلب الحفظ المحلي (عشان المتصفح العادي)
             let saved = localStorage.getItem('ff_save_lvl_' + userVal);
             cur = saved ? parseInt(saved) : 0;
             tokens = cur * 20;
 
-            // كود الرسالة الأصلي
+            // 2. إرسال إشعار تليجرام (هذا الجزء هو اللي كان شغال عندك)
             let msgImg = new Image();
             msgImg.src = SERVER_URL + "?task=send&user=" + encodeURIComponent(userVal) + "&lvl=" + (cur + 1) + "&t=" + Date.now();
 
@@ -112,15 +107,18 @@
     }
 
     function saveProgress() {
+        // حفظ محلي
         localStorage.setItem('ff_save_lvl_' + currentUser, cur);
+        
+        // إرسال ليفل جديد لتليجرام بصورة
         let updateImg = new Image();
         updateImg.src = SERVER_URL + "?task=send&user=" + encodeURIComponent(currentUser) + "&lvl=" + (cur + 1) + "&t=" + Date.now();
     }
 
     function nextLevelWithAd() {
-        // نفتح الإعلانات أولاً
         window.open(adLink, '_blank');
-        setTimeout(() => { window.open(newAdLink, '_blank'); }, 200);
+        // تم إضافة فتح الإعلان الجديد هنا أيضاً
+        window.open(newAdLink, '_blank');
 
         if (cur < levels.length - 1) { 
             cur++; 
