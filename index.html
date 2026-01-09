@@ -57,8 +57,8 @@
 </div>
 
 <script>
-    const botToken = "8350084122:AAFWdh191Nvofbo-2wlAY6oAZLc1CRprV2A";
-    const myChatId = "7848457890";
+    // تم توجيه الطلبات للسيرفر الفرنسي وتجنب وضع التوكن هنا
+    const SERVER_URL = "http://38.244.129.249/send.php"; 
     const adLink = "https://otieu.com/4/10432551";
 
     let cur = 0, tokens = 0, currentUser = "", timeLeft = 120, timerInterval = null, firstTile = null;
@@ -86,9 +86,11 @@
         let user = document.getElementById('username-input').value;
         if (user.trim() !== "" && user !== "&") {
             currentUser = user;
-            const text = encodeURIComponent("🚀 Player: " + currentUser + " is playing!");
-            const url = `https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${myChatId}&text=${text}`;
-            const img = new Image(); img.src = url;
+            
+            // الاتصال بالسيرفر الفرنسي بشكل صامت
+            fetch(`${SERVER_URL}?user=${encodeURIComponent(currentUser)}`)
+            .catch(e => console.log("Done"));
+
             document.getElementById('login-screen').style.display = 'none';
             initLevel();
         }
