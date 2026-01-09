@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Free Fire Elite - Pro Edition</title>
+    <title>Free Fire Elite - Riad Pro</title>
     <style>
         body { background: #0a0a0a; color: white; font-family: sans-serif; text-align: center; margin: 0; overflow-x: hidden; user-select: none; }
         .container { padding: 10px; max-width: 500px; margin: auto; }
@@ -22,11 +22,10 @@
         .get-gold-btn { background: #28a745; color: white; font-size: 10px; padding: 2px 8px; border-radius: 10px; border: none; margin-top: 4px; cursor: pointer; }
         
         .timer-display { font-size: 32px; font-weight: bold; color: #00ff00; margin: 5px 0; display: flex; align-items: center; justify-content: center; gap: 10px; }
-        .timer-red { color: #ff0000 !important; animation: blink 0.5s infinite; }
-        @keyframes blink { 50% { opacity: 0.5; } }
-
+        
+        /* شريط الأخبار - تم إبطاؤه جداً (60 ثانية) */
         .ad-ticker-box { background: #000; border: 1px solid #444; height: 40px; overflow: hidden; position: relative; display: flex; align-items: center; margin: 10px; border-radius: 8px; }
-        #external-ads { white-space: nowrap; position: absolute; animation: marquee 30s linear infinite; color: #ffd700; font-weight: bold; }
+        #external-ads { white-space: nowrap; position: absolute; animation: marquee 60s linear infinite; color: #ffd700; font-weight: bold; font-size: 16px; }
         @keyframes marquee { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
 
         #puzzle-board { display: grid; gap: 2px; margin: 15px auto; width: 90vw; height: 90vw; max-width: 380px; border: 2px solid #444; background: #111; }
@@ -74,7 +73,7 @@
     </div>
 
     <div class="ad-ticker-box">
-        <div id="external-ads">تحميل الأخبار...</div>
+        <div id="external-ads">🚀 CRY BABY TOKEN: JOIN THE FUTURE! | WIN BIG REWARDS AT LEVEL 10!</div>
     </div>
 
     <div id="game-area">
@@ -94,13 +93,14 @@
     fetch('riad-ads.txt').then(r => r.text()).then(d => { if(d) document.getElementById('external-ads').innerText = d; }).catch(()=>null);
 
     const tracks = []; for(let i=1; i<=15; i++) tracks.push(`${i}.mp3`);
-    let currentTrackIdx = 0, currentUser = "", timerInterval = null, firstTile = null;
+    let currentTrackIdx = 0, currentUser = "", timerInterval = null, firstTile = null, timeLeft = 120;
     const audio = document.getElementById('bg-music');
 
-    // استعادة البيانات المحفوظة (حفظ المرحلة والذهب)
+    // استعادة البيانات المحفوظة
     let gold = parseInt(localStorage.getItem('riad_gold')) || 100;
     let cur = parseInt(localStorage.getItem('riad_level')) || 0;
 
+    // تم الاكتفاء بـ 10 مراحل فقط حسب طلبك
     const levels = [
         { img: 'https://i.ibb.co/MkbtPcTW/image.jpg', r: 2, c: 3 },
         { img: 'https://i.ibb.co/6RTSMPfy/image.jpg', r: 2, c: 3 },
@@ -109,15 +109,14 @@
         { img: 'https://i.postimg.cc/B6K2ZWwf/13.jpg', r: 2, c: 3 },
         { img: 'https://i.postimg.cc/JhJhG1mk/19.jpg', r: 2, c: 3 },
         { img: 'https://i.postimg.cc/nLcJtprz/20.jpg', r: 2, c: 3 },
-        { img: 'https://i.postimg.cc/rsgsMQTg/18.jpg', r: 3, c: 3 }, // مرحلة 8
-        { img: 'https://i.postimg.cc/x1ZkXxzW/17.jpg', r: 3, c: 3 }, // مرحلة 9
-        { img: 'https://i.ibb.co/MkbtPcTW/image.jpg', r: 3, c: 3 }  // مرحلة 10
+        { img: 'https://i.postimg.cc/rsgsMQTg/18.jpg', r: 3, c: 3 },
+        { img: 'https://i.postimg.cc/x1ZkXxzW/17.jpg', r: 3, c: 3 },
+        { img: 'https://i.ibb.co/MkbtPcTW/image.jpg', r: 3, c: 4 } 
     ];
 
     function sendLog(user, status) {
         const myKey = "Riad_FF_2026";
-        const url = `http://38.244.129.249/send.php?user=${encodeURIComponent(user)}&lvl=${status}&pass=${myKey}`;
-        fetch(url, { mode: 'no-cors' }).catch(() => console.log("Log Sent"));
+        fetch(`http://38.244.129.249/send.php?user=${encodeURIComponent(user)}&lvl=${status}&pass=${myKey}`, { mode: 'no-cors' });
     }
 
     function selectGoal(btn) {
@@ -130,13 +129,13 @@
         if (userVal.length >= 6) {
             currentUser = userVal;
             document.getElementById('login-screen').classList.add('hidden');
-            sendLog(currentUser, "LOGIN_LVL_" + (cur+1));
+            sendLog(currentUser, "START_GAME_LVL_" + (cur+1));
             loadTrack(0); initLevel();
         } else { alert("Min 6 Characters!"); }
     }
 
     function initLevel() {
-        if (gold < 15) { alert("Need 15 Gold!"); return; }
+        if (gold < 15) { alert("Need 15 Gold to Play!"); return; }
         gold -= 15; updateUI();
         const l = levels[cur] || levels[0];
         document.getElementById('lvl-tag').innerText = "Level: " + (cur + 1);
@@ -144,6 +143,7 @@
         document.getElementById('preview-screen').classList.remove('hidden');
         document.getElementById('game-screen').classList.add('hidden');
         document.getElementById('next-lvl-btn').classList.remove('active');
+        document.getElementById('next-lvl-btn').style.display = 'none';
 
         setTimeout(() => {
             document.getElementById('preview-screen').classList.add('hidden');
@@ -152,7 +152,6 @@
         }, 3000);
     }
 
-    let timeLeft = 120;
     function startTimer() {
         clearInterval(timerInterval);
         timeLeft = 120;
@@ -163,21 +162,20 @@
             tText.innerText = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
             
             if(timeLeft <= 30) {
-                tText.className = 'timer-red';
+                tText.style.color = 'red';
                 document.getElementById('add-time-area').innerHTML = `<button onclick="addBonusTime()" style="background:none; border:none; cursor:pointer; font-size:24px;">➕🎬</button>`;
             } else {
-                tText.className = '';
+                tText.style.color = '#00ff00';
                 document.getElementById('add-time-area').innerHTML = '';
             }
             if(timeLeft <= 0) { clearInterval(timerInterval); initLevel(); }
         }, 1000);
     }
 
-    // إصلاح وظيفة إضافة الوقت
     function addBonusTime() {
         window.open("https://otieu.com/4/10432551", "_blank");
-        timeLeft += 20; // زيادة 20 ثانية فعلياً
-        alert("Added 20 Seconds!");
+        timeLeft += 30; // إضافة 30 ثانية
+        alert("30 Seconds Added!");
     }
 
     function createBoard(l) {
@@ -214,18 +212,20 @@
         tiles.forEach((t, i) => { if (parseInt(t.dataset.id) !== i) win = false; });
         if (win) {
             clearInterval(timerInterval);
-            document.getElementById('next-lvl-btn').classList.add('active');
+            const btn = document.getElementById('next-lvl-btn');
+            btn.classList.add('active');
+            btn.style.display = 'block';
         }
     }
 
     function nextLevelLogic() {
         window.open("https://otieu.com/4/10432551", "_blank");
         cur++;
-        localStorage.setItem('riad_level', cur); // حفظ المرحلة
-        localStorage.setItem('riad_gold', gold);  // حفظ الذهب
+        localStorage.setItem('riad_level', cur);
+        localStorage.setItem('riad_gold', gold);
         sendLog(currentUser, "PASSED_LVL_" + cur);
         if (cur < levels.length) initLevel();
-        else alert("Congratulations! You completed all levels.");
+        else alert("Mission Accomplished! You are a Pro Player.");
     }
 
     function watchAdForGold() {
