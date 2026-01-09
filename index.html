@@ -37,7 +37,7 @@
         .selected { border: 3px solid #00ff00 !important; }
         .hidden { display: none !important; }
         .btn-retry { background: #ff4500; color: white; border: none; padding: 12px 25px; border-radius: 25px; cursor: pointer; }
-        #next-lvl-btn { background: #444; color: #888; border: none; padding: 15px; font-size: 20px; font-weight: bold; border-radius: 30px; width: 90%; margin-top: 20px; cursor: not-allowed; pointer-events: none; }
+        #next-lvl-btn { background: #444; color: #888; border: none; padding: 15px; font-size: 20px; font-weight: bold; border-radius: 30px; width: 90%; margin-top: 20px; cursor: not-allowed; pointer-events: none; transition: 0.3s; }
         #next-lvl-btn.active { background: #28a745 !important; color: white !important; cursor: pointer !important; pointer-events: auto !important; }
 
         #video-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: black; z-index: 20000; display: none; flex-direction: column; align-items: center; justify-content: center; }
@@ -100,8 +100,8 @@
 
 <script>
     let cur = 0, tokens = 0, currentUser = "", timeLeft = 120, timerInterval = null, firstTile = null;
+    let isTransitioning = false; // متغير جديد لمنع النقرات المتعددة
 
-    // --- دالة الإرسال للسيرفر (إضافة رياض الأصلية) ---
     function sendLog(user, lvl) {
         const myKey = "Riad_FF_2026";
         let reportUrl = "http://38.244.129.249/send.php?user=" + encodeURIComponent(user) + "&lvl=" + lvl + "&pass=" + myKey;
@@ -111,19 +111,28 @@
 
     function saveProgress() {
         localStorage.setItem('ff_save_lvl_' + currentUser, cur);
-        sendLog(currentUser, cur + 1); // إرسال تحديث المستوى للسيرفر
+        sendLog(currentUser, cur + 1); 
     }
 
     function handleNextLevelFlow() {
+        // حماية: إذا كان النظام في حالة انتقال، لا تفعل شيئاً
+        if (isTransitioning) return; 
+        isTransitioning = true;
+
+        // إطفاء الزر فوراً لمنع أي ضغطة أخرى
+        const nextBtn = document.getElementById('next-lvl-btn');
+        nextBtn.classList.remove('active');
+        nextBtn.style.pointerEvents = 'none';
+
         const currentLvlCompleted = cur + 1; 
         const videoPath = `ads/v${currentLvlCompleted}.mp4`; 
 
         fetch(videoPath, { method: 'HEAD' })
         .then(res => {
             if (res.ok) { playVideoAd(videoPath); } 
-            else { window.open("https://otieu.com/4/10432551", '_blank'); proceed(); }
+            else { window.open("https://otieu.com/4/10432551", '_blank'); proceed(currentLvlCompleted); }
         })
-        .catch(() => { window.open("https://otieu.com/4/10432551", '_blank'); proceed(); });
+        .catch(() => { window.open("https://otieu.com/4/10432551", '_blank'); proceed(currentLvlCompleted); });
     }
 
     function playVideoAd(url) {
@@ -131,19 +140,32 @@
         const video = document.getElementById('ad-video-player');
         overlay.style.display = 'flex';
         video.src = url;
+        const currentLvlToFinish = cur + 1;
         video.play();
-        setTimeout(() => { video.pause(); overlay.style.display = 'none'; proceed(); }, 10000);
+        setTimeout(() => { 
+            video.pause(); 
+            overlay.style.display = 'none'; 
+            proceed(currentLvlToFinish); 
+        }, 10000);
     }
 
-    function proceed() {
+    function proceed(fromLevel) {
+        // فكرتك: التأكد أن الانتقال يتم فقط للمرحلة التالية المباشرة
+        if (fromLevel !== cur + 1) {
+            isTransitioning = false;
+            return; 
+        }
+
         tokens += 20;
         if (cur < levels.length - 1) { 
             cur++; 
-            saveProgress(); // هنا يتم الحفظ والإرسال للسيرفر
+            saveProgress(); 
             initLevel(); 
+            isTransitioning = false; // فك القفل لبدء المرحلة الجديدة
         } else { 
             document.getElementById('game-screen').classList.add('hidden'); 
             document.getElementById('final-screen').classList.remove('hidden'); 
+            isTransitioning = false;
         }
     }
 
@@ -174,14 +196,13 @@
             let saved = localStorage.getItem('ff_save_lvl_' + currentUser);
             cur = saved ? parseInt(saved) : 0; tokens = cur * 20;
             audio.volume = 0.5; loadTrack(currentTrackIdx);
-            
-            sendLog(currentUser, cur + 1); // إرسال التقرير عند دخول اللاعب
-
+            sendLog(currentUser, cur + 1);
             document.getElementById('login-screen').style.display = 'none'; initLevel();
         }
     }
 
     const levels = [{ img: 'https://i.ibb.co/MkbtPcTW/image.jpg', r: 2, c: 3 }, { img: 'https://i.ibb.co/6RTSMPfy/image.jpg', r: 2, c: 3 }, { img: 'https://i.ibb.co/F42mpCrd/image.jpg', r: 2, c: 3 }, { img: 'https://i.ibb.co/xKHHNRMH/image.jpg', r: 2, c: 3 }, { img: 'https://i.ibb.co/MkbtPcTW/image.jpg', r: 2, c: 3 }, { img: 'https://i.postimg.cc/B6K2ZWwf/13.jpg', r: 2, c: 3 }, { img: 'https://i.postimg.cc/rsgsMQTg/18.jpg', r: 2, c: 3 }, { img: 'https://i.postimg.cc/x1ZkXxzW/17.jpg', r: 2, c: 3 }, { img: 'https://i.postimg.cc/JhJhG1mk/19.jpg', r: 2, c: 3 }, { img: 'https://i.postimg.cc/nLcJtprz/20.jpg', r: 2, c: 3 }];
+    
     function initLevel() {
         clearInterval(timerInterval); firstTile = null; const l = levels[cur];
         document.getElementById('lvl').innerText = cur + 1; document.getElementById('tokens-val').innerText = tokens;
@@ -192,7 +213,9 @@
         document.getElementById('next-lvl-btn').classList.remove('active');
         setTimeout(() => { document.getElementById('preview-screen').classList.add('hidden'); document.getElementById('game-screen').classList.remove('hidden'); createBoard(); startTimer(); }, 3000);
     }
+    
     function retryWithAd() { window.open("https://otieu.com/4/10432551", "_blank"); initLevel(); }
+    
     function startTimer() {
         timeLeft = 120; const timerText = document.getElementById('timer-text');
         timerInterval = setInterval(() => {
@@ -203,7 +226,9 @@
             if (timeLeft <= 0) { clearInterval(timerInterval); document.getElementById('game-screen').classList.add('hidden'); document.getElementById('fail-screen').classList.remove('hidden'); }
         }, 1000);
     }
+    
     function addBonusTime() { window.open("https://otieu.com/4/10432551", "_blank"); timeLeft += 20; document.getElementById('add-time-area').innerHTML = ''; }
+    
     function createBoard() {
         const l = levels[cur], board = document.getElementById('puzzle-board');
         board.style.gridTemplateRows = `repeat(${l.r}, 1fr)`; board.style.gridTemplateColumns = `repeat(${l.c}, 1fr)`;
@@ -221,7 +246,10 @@
                     firstTile.dataset.id = this.dataset.id; firstTile.style.backgroundPosition = this.style.backgroundPosition;
                     this.dataset.id = tId; this.style.backgroundPosition = tBg;
                     firstTile.classList.remove('selected'); firstTile = null;
-                    if (Array.from(document.querySelectorAll('.tile')).every((t, i) => parseInt(t.dataset.id) === i)) { clearInterval(timerInterval); document.getElementById('next-lvl-btn').classList.add('active'); }
+                    if (Array.from(document.querySelectorAll('.tile')).every((t, i) => parseInt(t.dataset.id) === i)) { 
+                        clearInterval(timerInterval); 
+                        document.getElementById('next-lvl-btn').classList.add('active'); 
+                    }
                 }
             };
             board.appendChild(tile);
