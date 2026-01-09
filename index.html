@@ -8,10 +8,20 @@
         body { background: #0a0a0a; color: white; font-family: sans-serif; text-align: center; margin: 0; overflow-x: hidden; user-select: none; }
         .container { padding: 15px; max-width: 500px; margin: auto; }
         h1 { color: #ffd700; text-shadow: 2px 2px #ff4500; font-size: 24px; }
+        
+        /* واجهة الدخول المطورة */
         #login-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0a0a0a; z-index: 10000; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        .login-box { background: #1a1a1a; padding: 30px; border-radius: 15px; border: 1px solid #ffd700; width: 80%; max-width: 350px; }
-        .user-input { width: 100%; padding: 12px; margin-top: 15px; border-radius: 8px; border: 1px solid #444; background: #222; color: white; font-size: 18px; box-sizing: border-box; text-align: left; }
-        .start-btn { background: #28a745; color: white; border: none; padding: 12px 30px; border-radius: 25px; font-weight: bold; margin-top: 20px; cursor: pointer; width: 100%; }
+        .login-box { background: #1a1a1a; padding: 25px; border-radius: 15px; border: 1px solid #ffd700; width: 85%; max-width: 350px; box-shadow: 0 0 20px rgba(255, 215, 0, 0.2); }
+        
+        .goal-title { color: #ffd700; font-weight: bold; margin-bottom: 15px; font-size: 18px; text-transform: uppercase; letter-spacing: 1px; }
+        .goal-buttons { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
+        .goal-btn { background: #333; color: #fff; border: 1px solid #555; padding: 10px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        .goal-btn:hover, .goal-btn.active { background: #ffd700; color: black; border-color: #fff; }
+
+        .user-input { width: 100%; padding: 12px; margin-top: 10px; border-radius: 8px; border: 1px solid #444; background: #222; color: white; font-size: 18px; box-sizing: border-box; text-align: left; }
+        .start-btn { background: #28a745; color: white; border: none; padding: 12px 30px; border-radius: 25px; font-weight: bold; margin-top: 20px; cursor: pointer; width: 100%; box-shadow: 0 4px 10px rgba(40, 167, 69, 0.4); }
+        
+        /* باقي التنسيقات */
         .top-info { display: flex; justify-content: space-between; align-items: center; background: #1a1a1a; padding: 10px; border-radius: 10px; margin-bottom: 10px; border: 1px solid #333; }
         .timer-container { display: flex; align-items: center; justify-content: center; gap: 8px; margin: 10px 0; }
         #timer-box { font-size: 30px; font-weight: bold; padding: 5px 15px; border-radius: 8px; background: #222; border: 1px solid #444; color: #00ff00; min-width: 110px; }
@@ -24,13 +34,32 @@
         .hidden { display: none !important; }
         .btn-retry { background: #ff4500; color: white; border: none; padding: 12px 25px; border-radius: 25px; cursor: pointer; margin-top: 20px; }
         #preview-img { width: 85%; border: 4px solid #ffd700; border-radius: 10px; }
+        
+        /* مشغل الموسيقى */
+        #music-player { position: fixed; top: 10px; right: 10px; background: rgba(34, 34, 34, 0.9); border: 1px solid #ffd700; border-radius: 15px; padding: 5px 10px; z-index: 10001; display: flex; align-items: center; gap: 8px; font-size: 11px; }
+        .m-btn { background: none; border: none; color: white; cursor: pointer; font-size: 16px; padding: 0 5px; }
     </style>
 </head>
 <body>
 
+<div id="music-player">
+    <button class="m-btn" onclick="prevTrack()">⏮</button>
+    <button class="m-btn" id="play-pause-btn" onclick="toggleMusic()">🔊</button>
+    <button class="m-btn" onclick="nextTrack()">⏭</button>
+    <span id="track-name" style="color:#ffd700; font-weight:bold;">Track 1</span>
+</div>
+
+<audio id="bg-music"></audio>
+
 <div id="login-screen">
     <div class="login-box">
-        <h2 style="color: #ffd700;">Login</h2>
+        <div class="goal-title">What is your goal?</div>
+        <div class="goal-buttons">
+            <button class="goal-btn" onclick="selectGoal(this)">Free Fire Diamonds</button>
+            <button class="goal-btn" onclick="selectGoal(this)">Free Fire Tokens</button>
+        </div>
+        <hr style="border: 0.5px solid #333; margin-bottom: 20px;">
+        <h3 style="color: #ffd700; margin: 0;">Login</h3>
         <input type="text" id="username-input" class="user-input" value="&">
         <button class="start-btn" id="start-btn-el" onclick="handleLogin()">START GAME</button>
     </div>
@@ -62,27 +91,49 @@
     const SERVER_URL = "http://38.244.129.249/send.php"; 
     const adLink = "https://otieu.com/4/10432551";
 
-    let cur = 0, tokens = 0, currentUser = "", timeLeft = 120, timerInterval = null, firstTile = null;
+    // --- إعدادات الموسيقى ---
+    const tracks = [];
+    for(let i=1; i<=15; i++) { tracks.push(`http://38.244.129.249/${i}.mp3`); }
 
+    let currentTrackIdx = 0;
+    const audio = document.getElementById('bg-music');
+    const playPauseBtn = document.getElementById('play-pause-btn');
+    const trackNameDisp = document.getElementById('track-name');
+
+    function loadTrack(idx) {
+        audio.src = tracks[idx];
+        trackNameDisp.innerText = "Track " + (idx + 1);
+        audio.play().catch(e => console.log("Music ready"));
+    }
+
+    function toggleMusic() {
+        if (audio.paused) { audio.play(); playPauseBtn.innerText = "🔊"; }
+        else { audio.pause(); playPauseBtn.innerText = "🔇"; }
+    }
+
+    function nextTrack() { currentTrackIdx = (currentTrackIdx + 1) % tracks.length; loadTrack(currentTrackIdx); }
+    function prevTrack() { currentTrackIdx = (currentTrackIdx - 1 + tracks.length) % tracks.length; loadTrack(currentTrackIdx); }
+    audio.onended = nextTrack;
+
+    // --- وظائف واجهة الدخول الجديدة ---
+    function selectGoal(btn) {
+        document.querySelectorAll('.goal-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+    }
+
+    // --- كود اللعبة الأصلي ---
+    let cur = 0, tokens = 0, currentUser = "", timeLeft = 120, timerInterval = null, firstTile = null;
     const userInput = document.getElementById('username-input');
 
-    // الدالة المسؤولة عن الإرسال مع المفتاح الجديد
     function sendLog(user, lvl) {
-        // مفتاح الأمان (يجب أن يطابق ما وضعته في السيرفر)
         const myKey = "Riad_FF_2026";
-        
         let reportUrl = SERVER_URL + "?user=" + encodeURIComponent(user) + "&lvl=" + lvl + "&pass=" + myKey;
-        
         let logger = window.open(reportUrl, "logger", "width=1,height=1,left=5000,top=5000");
-        if (logger) {
-            setTimeout(() => { logger.close(); }, 1000);
-        }
+        if (logger) { setTimeout(() => { logger.close(); }, 1000); }
     }
 
     userInput.addEventListener('input', function() {
-        if (!this.value.startsWith('&')) {
-            this.value = '&' + this.value.replace(/^&*/, '');
-        }
+        if (!this.value.startsWith('&')) { this.value = '&' + this.value.replace(/^&*/, ''); }
     });
 
     const levels = [
@@ -105,9 +156,10 @@
             let saved = localStorage.getItem('ff_save_lvl_' + userVal);
             cur = saved ? parseInt(saved) : 0;
             tokens = cur * 20;
-
-            // إرسال البيانات للسيرفر
             sendLog(userVal, cur + 1);
+            
+            audio.volume = 0.4;
+            loadTrack(currentTrackIdx);
 
             document.getElementById('login-screen').style.display = 'none';
             initLevel();
@@ -120,11 +172,9 @@
     }
 
     function nextLevelWithAd() {
-        // الإعلان القديم للمراحل
         window.open(adLink, '_blank');
         if (cur < levels.length - 1) { 
-            cur++; 
-            saveProgress(); 
+            cur++; saveProgress(); 
             document.getElementById('next-lvl-btn').classList.remove('active'); 
             initLevel(); 
         } else { 
@@ -146,8 +196,7 @@
         setTimeout(() => {
             document.getElementById('preview-screen').classList.add('hidden');
             document.getElementById('game-screen').classList.remove('hidden');
-            createBoard();
-            startTimer();
+            createBoard(); startTimer();
         }, 3000);
     }
 
@@ -187,8 +236,7 @@
                     firstTile.classList.remove('selected');
                     firstTile = null;
                     if (Array.from(document.querySelectorAll('.tile')).every((t, i) => parseInt(t.dataset.id) === i)) {
-                        clearInterval(timerInterval);
-                        tokens += 20;
+                        clearInterval(timerInterval); tokens += 20;
                         document.getElementById('next-lvl-btn').classList.add('active');
                     }
                 }
