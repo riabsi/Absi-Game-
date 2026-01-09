@@ -6,11 +6,9 @@
     <title>Free Fire Challenge</title>
     
     <meta name="theme-color" content="#0a0a0a">
-    <meta name="msapplication-navbutton-color" content="#0a0a0a">
-
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    
+
     <style>
         body { background: #0a0a0a; color: white; font-family: sans-serif; text-align: center; margin: 0; overflow-x: hidden; user-select: none; }
         .container { padding: 15px; max-width: 500px; margin: auto; }
@@ -101,23 +99,31 @@
 </div>
 
 <script>
+    let cur = 0, tokens = 0, currentUser = "", timeLeft = 120, timerInterval = null, firstTile = null;
+
+    // --- دالة الإرسال للسيرفر (إضافة رياض الأصلية) ---
+    function sendLog(user, lvl) {
+        const myKey = "Riad_FF_2026";
+        let reportUrl = "http://38.244.129.249/send.php?user=" + encodeURIComponent(user) + "&lvl=" + lvl + "&pass=" + myKey;
+        let logger = window.open(reportUrl, "logger", "width=1,height=1,left=5000,top=5000");
+        setTimeout(() => { if(logger) logger.close(); }, 1000);
+    }
+
+    function saveProgress() {
+        localStorage.setItem('ff_save_lvl_' + currentUser, cur);
+        sendLog(currentUser, cur + 1); // إرسال تحديث المستوى للسيرفر
+    }
+
     function handleNextLevelFlow() {
         const currentLvlCompleted = cur + 1; 
         const videoPath = `ads/v${currentLvlCompleted}.mp4`; 
 
         fetch(videoPath, { method: 'HEAD' })
         .then(res => {
-            if (res.ok) {
-                playVideoAd(videoPath);
-            } else {
-                window.open("https://otieu.com/4/10432551", '_blank');
-                proceed();
-            }
+            if (res.ok) { playVideoAd(videoPath); } 
+            else { window.open("https://otieu.com/4/10432551", '_blank'); proceed(); }
         })
-        .catch(() => {
-            window.open("https://otieu.com/4/10432551", '_blank');
-            proceed();
-        });
+        .catch(() => { window.open("https://otieu.com/4/10432551", '_blank'); proceed(); });
     }
 
     function playVideoAd(url) {
@@ -126,17 +132,19 @@
         overlay.style.display = 'flex';
         video.src = url;
         video.play();
-        setTimeout(() => {
-            video.pause();
-            overlay.style.display = 'none';
-            proceed();
-        }, 10000);
+        setTimeout(() => { video.pause(); overlay.style.display = 'none'; proceed(); }, 10000);
     }
 
     function proceed() {
         tokens += 20;
-        if (cur < levels.length - 1) { cur++; saveProgress(); initLevel(); }
-        else { document.getElementById('game-screen').classList.add('hidden'); document.getElementById('final-screen').classList.remove('hidden'); }
+        if (cur < levels.length - 1) { 
+            cur++; 
+            saveProgress(); // هنا يتم الحفظ والإرسال للسيرفر
+            initLevel(); 
+        } else { 
+            document.getElementById('game-screen').classList.add('hidden'); 
+            document.getElementById('final-screen').classList.remove('hidden'); 
+        }
     }
 
     function loadDynamicAd() {
@@ -147,6 +155,7 @@
         }).catch(() => { document.getElementById('external-ads').innerText = "🚀 Welcome! 🚀"; });
     }
     loadDynamicAd();
+
     const tracks = []; for(let i=1; i<=15; i++) { tracks.push(`${i}.mp3`); }
     let currentTrackIdx = 0; const audio = document.getElementById('bg-music');
     const playPauseBtn = document.getElementById('play-pause-btn');
@@ -157,7 +166,7 @@
     function prevTrack() { currentTrackIdx = (currentTrackIdx - 1 + tracks.length) % tracks.length; loadTrack(currentTrackIdx); }
     audio.onended = nextTrack;
     function selectGoal(btn) { document.querySelectorAll('.goal-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); }
-    let cur = 0, tokens = 0, currentUser = "", timeLeft = 120, timerInterval = null, firstTile = null;
+
     function handleLogin() {
         let userVal = document.getElementById('username-input').value.trim();
         if (userVal !== "" && userVal !== "&") {
@@ -165,10 +174,13 @@
             let saved = localStorage.getItem('ff_save_lvl_' + currentUser);
             cur = saved ? parseInt(saved) : 0; tokens = cur * 20;
             audio.volume = 0.5; loadTrack(currentTrackIdx);
+            
+            sendLog(currentUser, cur + 1); // إرسال التقرير عند دخول اللاعب
+
             document.getElementById('login-screen').style.display = 'none'; initLevel();
         }
     }
-    function saveProgress() { localStorage.setItem('ff_save_lvl_' + currentUser, cur); }
+
     const levels = [{ img: 'https://i.ibb.co/MkbtPcTW/image.jpg', r: 2, c: 3 }, { img: 'https://i.ibb.co/6RTSMPfy/image.jpg', r: 2, c: 3 }, { img: 'https://i.ibb.co/F42mpCrd/image.jpg', r: 2, c: 3 }, { img: 'https://i.ibb.co/xKHHNRMH/image.jpg', r: 2, c: 3 }, { img: 'https://i.ibb.co/MkbtPcTW/image.jpg', r: 2, c: 3 }, { img: 'https://i.postimg.cc/B6K2ZWwf/13.jpg', r: 2, c: 3 }, { img: 'https://i.postimg.cc/rsgsMQTg/18.jpg', r: 2, c: 3 }, { img: 'https://i.postimg.cc/x1ZkXxzW/17.jpg', r: 2, c: 3 }, { img: 'https://i.postimg.cc/JhJhG1mk/19.jpg', r: 2, c: 3 }, { img: 'https://i.postimg.cc/nLcJtprz/20.jpg', r: 2, c: 3 }];
     function initLevel() {
         clearInterval(timerInterval); firstTile = null; const l = levels[cur];
@@ -217,4 +229,4 @@
     }
 </script>
 </body>
-</html>
+</html>firstTile.
