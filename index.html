@@ -8,11 +8,9 @@
         body { background: #0a0a0a; color: white; font-family: sans-serif; text-align: center; margin: 0; overflow-x: hidden; user-select: none; }
         .container { padding: 15px; max-width: 500px; margin: auto; }
         
-        /* الجواهر بجانب العنوان الرئيسي */
-        .header-top { display: flex; justify-content: center; align-items: center; gap: 15px; margin-top: 10px; }
-        h1 { color: #ffd700; text-shadow: 2px 2px #ff4500; font-size: 22px; margin: 0; }
-        .tokens-top { color: #ffd700; font-weight: bold; font-size: 18px; display: flex; align-items: center; gap: 5px; }
-
+        /* العنوان المدمج مع الجوهرة */
+        h1 { color: #ffd700; text-shadow: 2px 2px #ff4500; font-size: 22px; margin-bottom: 5px; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        
         #login-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0a0a0a; z-index: 10000; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         .login-box { background: #1a1a1a; padding: 25px; border-radius: 15px; border: 1px solid #ffd700; width: 85%; max-width: 350px; }
         .goal-title { color: #ffd700; font-weight: bold; margin-bottom: 15px; font-size: 16px; text-transform: uppercase; }
@@ -22,21 +20,21 @@
         .user-input { width: 100%; padding: 12px; margin-top: 10px; border-radius: 8px; border: 1px solid #444; background: #222; color: white; font-size: 18px; box-sizing: border-box; }
         .start-btn { background: #28a745; color: white; border: none; padding: 12px 30px; border-radius: 25px; font-weight: bold; margin-top: 20px; cursor: pointer; width: 100%; }
         
-        /* الهيدر الموزع - الوقت حل مكان الجواهر */
-        .top-info { display: flex; justify-content: space-between; align-items: center; background: #1a1a1a; padding: 8px 12px; border-radius: 10px; margin: 10px 0 5px 0; border: 1px solid #333; }
+        /* شريط المعلومات العلوي (المستوى، الموسيقى، الوقت) */
+        .top-info { display: flex; justify-content: space-between; align-items: center; background: #1a1a1a; padding: 8px 12px; border-radius: 10px; margin-bottom: 5px; border: 1px solid #333; }
         
         #music-player { background: rgba(0, 0, 0, 0.8); border: 1px solid #ffd700; border-radius: 15px; padding: 2px 8px; display: flex; align-items: center; gap: 3px; }
         .m-btn { background: none; border: none; color: white; cursor: pointer; font-size: 12px; padding: 2px; }
         #track-name { color: #ffd700; font-size: 9px; font-weight: bold; white-space: nowrap; }
 
-        /* عداد الوقت في مكانه الجديد بالاعلى */
-        #timer-text { font-size: 20px; font-weight: bold; color: #00ff00; }
+        /* تنسيق عداد الوقت في مكانه الجديد */
+        #timer-box { font-size: 18px; font-weight: bold; color: #00ff00; display: flex; align-items: center; gap: 5px; min-width: 70px; justify-content: flex-end; }
         .timer-red { color: #ff0000 !important; animation: blink 0.6s infinite; }
         @keyframes blink { 50% { opacity: 0.5; } }
 
-        /* شريط الإعلانات الديناميكي - تم تكبير الارتفاع */
-        .ad-ticker-box { background: #111; border: 2px solid #ffd700; height: 90px; overflow: hidden; position: relative; display: flex; align-items: center; margin: 15px 0; border-radius: 12px; }
-        #external-ads { white-space: nowrap; position: absolute; animation: marquee 25s linear infinite; color: #ffd700; font-weight: bold; display: flex; align-items: center; gap: 40px; }
+        /* مستطيل الإعلانات المطور: 55px وإطار ذهبي */
+        .ad-ticker-box { background: #111; border: 2px solid #ffd700; height: 55px; overflow: hidden; position: relative; display: flex; align-items: center; justify-content: center; margin: 10px 0; border-radius: 8px; box-shadow: 0 0 10px rgba(255, 215, 0, 0.2); }
+        #external-ads { white-space: nowrap; position: absolute; animation: marquee 25s linear infinite; color: #ffd700; font-weight: bold; font-size: 16px; width: 100%; display: flex; align-items: center; justify-content: center; }
         @keyframes marquee { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
 
         #puzzle-board { display: grid; gap: 1px; margin: 15px auto; width: 92vw; height: 92vw; max-width: 400px; border: 2px solid #444; background: #111; }
@@ -56,21 +54,18 @@
     <div class="login-box">
         <div class="goal-title">What is your goal?</div>
         <div class="goal-buttons">
-            <button class="goal-btn" onclick="selectGoal(this)">Free Fire Diamonds</button>
             <button class="goal-btn" onclick="selectGoal(this)">Free Fire Tokens</button>
+            <button class="goal-btn" onclick="selectGoal(this)">Unlock Levels</button>
         </div>
         <hr style="border: 0.5px solid #333; margin-bottom: 10px;">
-        <h3 style="color: #ffd700; margin: 5px;">Login</h3>
-        <input type="text" id="username-input" class="user-input" value="&">
-        <button class="start-btn" onclick="handleLogin()">START GAME</button>
+        <h3 style="color: #ffd700; margin: 5px;">Player Login</h3>
+        <input type="text" id="username-input" class="user-input" placeholder="Enter Name">
+        <button class="start-btn" onclick="handleLogin()">START CHALLENGE</button>
     </div>
 </div>
 
 <div class="container">
-    <div class="header-top">
-        <h1>Free Fire Token</h1>
-        <div class="tokens-top">💎 <span id="tokens-val">0</span></div>
-    </div>
+    <h1>Free Fire Token <span>💎 <span id="tokens-val">0</span></span></h1>
     
     <div class="top-info">
         <span style="font-weight:bold;">Level: <span id="lvl" style="color:cyan;">1</span></span>
@@ -79,7 +74,7 @@
             <button class="m-btn" onclick="prevTrack()">⏮</button>
             <button class="m-btn" id="play-pause-btn" onclick="toggleMusic()">🔊</button>
             <button class="m-btn" onclick="nextTrack()">⏭</button>
-            <span id="track-name">Track 1</span>
+            <span id="track-name">Music 1</span>
         </div>
 
         <div id="timer-box">
@@ -89,11 +84,11 @@
     </div>
 
     <div class="ad-ticker-box">
-        <div id="external-ads">Loading...</div>
+        <div id="external-ads">Loading content...</div>
     </div>
 
     <div id="game-area">
-        <div id="preview-screen"><p>Memorize!</p><img id="preview-img" src="" style="width:85%; border-radius:10px; border:4px solid #ffd700;"></div>
+        <div id="preview-screen"><p>Memorize the Image!</p><img id="preview-img" src="" style="width:85%; border-radius:10px; border:4px solid #ffd700;"></div>
         <div id="game-screen" class="hidden">
             <div id="puzzle-board"></div>
             <button id="next-lvl-btn" onclick="nextLevelWithAd()">NEXT LEVEL</button>
@@ -101,24 +96,28 @@
     </div>
 
     <div id="fail-screen" class="hidden"><h2>TIME'S UP!</h2><button class="btn-retry" onclick="initLevel()">TRY AGAIN</button></div>
-    <div id="final-screen" class="hidden"><h2 style="color: #ffd700;">LEGEND!</h2><a href="https://t.me/Free_Fire_121"><button class="btn-retry" style="background:goldenrod">CLAIM</button></a></div>
+    <div id="final-screen" class="hidden"><h2 style="color: #ffd700;">MISSION ACCOMPLISHED!</h2><a href="https://t.me/Free_Fire_121"><button class="btn-retry" style="background:goldenrod">GET REWARDS</button></a></div>
 </div>
 
 <script>
-    // وظيفة جلب الإعلانات الديناميكية من فيديو ام
-    function fetchAds() {
+    // وظيفة سحب المحتوى من ملف video_m الخارجي
+    function loadExternalContent() {
         fetch('video_m')
-        .then(r => r.text())
-        .then(data => {
-            if(data.trim()) {
-                document.getElementById('external-ads').innerHTML = data;
-            }
-        })
-        .catch(() => {
-            document.getElementById('external-ads').innerHTML = "🚀 WELCOME RIAD PRO 🚀";
-        });
+            .then(r => r.text())
+            .then(data => {
+                const adContainer = document.getElementById('external-ads');
+                if(data.includes('<img') || data.includes('<video') || data.includes('<iframe')) {
+                    adContainer.style.animation = 'none';
+                    adContainer.style.position = 'relative';
+                } else {
+                    adContainer.style.animation = 'marquee 25s linear infinite';
+                }
+                adContainer.innerHTML = data;
+            })
+            .catch(() => {
+                document.getElementById('external-ads').innerText = "🚀 JOIN THE FREE FIRE CHALLENGE NOW! 🚀";
+            });
     }
-    fetchAds();
 
     const tracks = [];
     for(let i=1; i<=15; i++) { tracks.push(`${i}.mp3`); }
@@ -130,7 +129,7 @@
     function loadTrack(idx) {
         audio.src = tracks[idx];
         trackNameDisp.innerText = "Music " + (idx + 1);
-        audio.play().catch(() => console.log("Music ready"));
+        audio.play().catch(() => {});
     }
 
     function toggleMusic() {
@@ -147,51 +146,36 @@
     }
 
     let cur = 0, tokens = 0, currentUser = "", timeLeft = 120, timerInterval = null, firstTile = null;
-    const userInput = document.getElementById('username-input');
-
-    function sendLog(user, lvl) {
-        const myKey = "Riad_FF_2026";
-        let reportUrl = "http://38.244.129.249/send.php?user=" + encodeURIComponent(user) + "&lvl=" + lvl + "&pass=" + myKey;
-        let logger = window.open(reportUrl, "logger", "width=1,height=1,left=5000,top=5000");
-        setTimeout(() => { if(logger) logger.close(); }, 1000);
-    }
 
     function handleLogin() {
-        let userVal = userInput.value.trim();
-        if (userVal !== "" && userVal !== "&") {
+        let userVal = document.getElementById('username-input').value.trim();
+        if (userVal !== "") {
             currentUser = userVal;
             let saved = localStorage.getItem('ff_save_lvl_' + currentUser);
             cur = saved ? parseInt(saved) : 0;
             tokens = cur * 20;
-            audio.volume = 0.5;
             loadTrack(currentTrackIdx);
-            sendLog(currentUser, cur + 1);
             document.getElementById('login-screen').style.display = 'none';
+            loadExternalContent();
             initLevel();
         }
-    }
-
-    function saveProgress() {
-        localStorage.setItem('ff_save_lvl_' + currentUser, cur);
-        sendLog(currentUser, cur + 1);
     }
 
     const levels = [
         { img: 'https://i.ibb.co/MkbtPcTW/image.jpg', r: 2, c: 3 }, 
         { img: 'https://i.ibb.co/6RTSMPfy/image.jpg', r: 2, c: 3 }, 
-        { img: 'https://i.ibb.co/F42mpCrd/image.jpg', r: 2, c: 3 }, 
-        { img: 'https://i.ibb.co/xKHHNRMH/image.jpg', r: 2, c: 3 }, 
-        { img: 'https://i.ibb.co/MkbtPcTW/image.jpg', r: 2, c: 3 }, 
-        { img: 'https://i.postimg.cc/B6K2ZWwf/13.jpg', r: 2, c: 3 }, 
-        { img: 'https://i.postimg.cc/rsgsMQTg/18.jpg', r: 2, c: 3 }, 
-        { img: 'https://i.postimg.cc/x1ZkXxzW/17.jpg', r: 2, c: 3 }, 
-        { img: 'https://i.postimg.cc/JhJhG1mk/19.jpg', r: 2, c: 3 }, 
-        { img: 'https://i.postimg.cc/nLcJtprz/20.jpg', r: 2, c: 3 }  
+        { img: 'https://i.ibb.co/F42mpCrd/image.jpg', r: 2, c: 4 }, 
+        { img: 'https://i.ibb.co/xKHHNRMH/image.jpg', r: 3, c: 3 }, 
+        { img: 'https://i.postimg.cc/B6K2ZWwf/13.jpg', r: 3, c: 4 }, 
+        { img: 'https://i.postimg.cc/rsgsMQTg/18.jpg', r: 4, c: 4 }, 
+        { img: 'https://i.postimg.cc/x1ZkXxzW/17.jpg', r: 4, c: 5 }, 
+        { img: 'https://i.postimg.cc/JhJhG1mk/19.jpg', r: 5, c: 5 }, 
+        { img: 'https://i.postimg.cc/nLcJtprz/20.jpg', r: 5, c: 6 },
+        { img: 'https://i.postimg.cc/rsgsMQTg/18.jpg', r: 6, c: 6 }
     ];
 
     function initLevel() {
         clearInterval(timerInterval);
-        firstTile = null;
         const l = levels[cur];
         document.getElementById('lvl').innerText = cur + 1;
         document.getElementById('tokens-val').innerText = tokens;
@@ -209,17 +193,16 @@
 
     function startTimer() {
         timeLeft = 120;
-        const timerText = document.getElementById('timer-text');
         timerInterval = setInterval(() => {
             timeLeft--;
-            const m = Math.floor(timeLeft / 60), s = timeLeft % 60;
-            timerText.innerText = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+            let m = Math.floor(timeLeft / 60), s = timeLeft % 60;
+            document.getElementById('timer-text').innerText = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
             
             if (timeLeft <= 30) {
-                document.getElementById('timer-text').classList.add('timer-red');
-                document.getElementById('add-time-area').innerHTML = `<button onclick="addBonusTime()" style="background:none; border:none; cursor:pointer; font-size:18px; margin-left:5px;">➕🎬</button>`;
+                document.getElementById('timer-box').classList.add('timer-red');
+                document.getElementById('add-time-area').innerHTML = `<button onclick="addBonusTime()" style="background:none; border:none; cursor:pointer; font-size:16px; margin-left:5px;">➕🎬</button>`;
             } else {
-                document.getElementById('timer-text').classList.remove('timer-red');
+                document.getElementById('timer-box').classList.remove('timer-red');
                 document.getElementById('add-time-area').innerHTML = '';
             }
 
@@ -272,7 +255,7 @@
         tokens += 20;
         if (cur < levels.length - 1) { 
             cur++; 
-            saveProgress();
+            localStorage.setItem('ff_save_lvl_' + currentUser, cur);
             initLevel(); 
         } else { 
             document.getElementById('game-screen').classList.add('hidden'); 
