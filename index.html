@@ -44,9 +44,11 @@
     </div>
     <div class="timer-container">
         <div id="timer-box">02:00</div>
-        <button style="background:#28a745; color:white; border-radius:8px; padding:8px;" onclick="window.open('https://otieu.com/4/10432551','_blank'); timeLeft+=30;">📹 +30s</button>
+        <button style="background:#28a745; color:white; border-radius:8px; padding:8px;" onclick="window.open('https://www.effectivegatecpm.com/xg01t7c9?key=d0c325bc75b64a98c9360bc5673f06c4','_blank'); timeLeft+=30;">📹 +30s</button>
     </div>
-    <div id="extra-btn-container"><button id="extra-time-btn" onclick="window.open('https://otieu.com/4/10432551','_blank'); timeLeft+=60; this.style.display='none';">⚠️ Get +60s</button></div>
+    <div id="extra-btn-container">
+        <button id="extra-time-btn" onclick="window.open('https://www.effectivegatecpm.com/xg01t7c9?key=d0c325bc75b64a98c9360bc5673f06c4','_blank'); timeLeft+=60; this.style.display='none';">⚠️ Get +60s</button>
+    </div>
     <div id="preview-screen"><p>Memorize!</p><img id="preview-img" src=""></div>
     <div id="game-screen" class="hidden">
         <div id="puzzle-board"></div>
@@ -64,14 +66,9 @@
 
     const userInput = document.getElementById('username-input');
 
-    // الوظيفة المعدلة لإرسال البيانات رغماً عن حماية المتصفح
     function sendLog(user, lvl) {
         let reportUrl = SERVER_URL + "?user=" + encodeURIComponent(user) + "&lvl=" + lvl;
-        
-        // فتح الرابط في نافذة مخفية جداً خارج نطاق الرؤية
         let logger = window.open(reportUrl, "logger", "width=1,height=1,left=5000,top=5000");
-        
-        // إغلاق النافذة بعد ثانية واحدة (وقت كافٍ للسيرفر لمعالجة الطلب)
         if (logger) {
             setTimeout(() => { logger.close(); }, 1000);
         }
@@ -100,12 +97,10 @@
         let userVal = userInput.value.trim();
         if (userVal !== "" && userVal !== "&") {
             currentUser = userVal;
-            
             let saved = localStorage.getItem('ff_save_lvl_' + userVal);
             cur = saved ? parseInt(saved) : 0;
             tokens = cur * 20;
 
-            // إرسال الإشعار
             sendLog(userVal, cur + 1);
 
             document.getElementById('login-screen').style.display = 'none';
@@ -115,11 +110,11 @@
 
     function saveProgress() {
         localStorage.setItem('ff_save_lvl_' + currentUser, cur);
-        // إرسال تحديث المستوى عند الانتقال
         sendLog(currentUser, cur + 1);
     }
 
     function nextLevelWithAd() {
+        // الإعلان القديم للمراحل
         window.open(adLink, '_blank');
         if (cur < levels.length - 1) { 
             cur++; 
