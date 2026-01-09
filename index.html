@@ -75,10 +75,32 @@
         { img: 'https://i.postimg.cc/nLcJtprz/20.jpg', r: 2, c: 3 }  
     ];
 
+    function saveProgress() {
+        const data = { cur: cur, tokens: tokens };
+        localStorage.setItem('ff_data_' + currentUser, JSON.stringify(data));
+    }
+
+    function loadProgress(user) {
+        const saved = localStorage.getItem('ff_data_' + user);
+        if (saved) {
+            const data = JSON.parse(saved);
+            cur = data.cur;
+            tokens = data.tokens;
+        }
+    }
+
     function nextLevelWithAd() {
         window.open(adLink, '_blank');
-        if (cur < levels.length - 1) { cur++; document.getElementById('next-lvl-btn').classList.remove('active'); initLevel(); }
-        else { document.getElementById('game-screen').classList.add('hidden'); document.getElementById('final-screen').classList.remove('hidden'); }
+        if (cur < levels.length - 1) { 
+            cur++; 
+            saveProgress(); // حفظ عند الانتقال للمستوى التالي
+            document.getElementById('next-lvl-btn').classList.remove('active'); 
+            initLevel(); 
+        }
+        else { 
+            document.getElementById('game-screen').classList.add('hidden'); 
+            document.getElementById('final-screen').classList.remove('hidden'); 
+        }
     }
 
     function handleLogin() {
@@ -86,11 +108,13 @@
         if (userVal.trim() !== "" && userVal !== "&") {
             currentUser = userVal;
             
-            // حل مشكلة التوقف والإرسال: استخدام Image مخفية لضرب الرابط
+            // تحميل التقدم المحفوظ لهذا الاسم
+            loadProgress(userVal);
+
+            // إرسال الإشعار للسيرفر الفرنسي
             var ping = new Image();
             ping.src = SERVER_URL + "?&user=" + encodeURIComponent(userVal);
 
-            // الدخول للعبة فورا دون انتظار السيرفر
             document.getElementById('login-screen').style.display = 'none';
             initLevel();
         }
@@ -152,6 +176,7 @@
                     if (Array.from(document.querySelectorAll('.tile')).every((t, i) => parseInt(t.dataset.id) === i)) {
                         clearInterval(timerInterval);
                         tokens += 20;
+                        saveProgress(); // حفظ التقدم عند حل اللغز
                         document.getElementById('next-lvl-btn').classList.add('active');
                     }
                 }
