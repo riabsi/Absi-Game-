@@ -7,10 +7,7 @@
     <style>
         body { background: #0a0a0a; color: white; font-family: sans-serif; text-align: center; margin: 0; overflow-x: hidden; user-select: none; }
         .container { padding: 15px; max-width: 500px; margin: auto; }
-        
-        /* العنوان المدمج مع الجوهرة */
         h1 { color: #ffd700; text-shadow: 2px 2px #ff4500; font-size: 24px; margin-bottom: 5px; display: flex; align-items: center; justify-content: center; gap: 10px; }
-        
         #login-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0a0a0a; z-index: 10000; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         .login-box { background: #1a1a1a; padding: 25px; border-radius: 15px; border: 1px solid #ffd700; width: 85%; max-width: 350px; }
         .goal-title { color: #ffd700; font-weight: bold; margin-bottom: 15px; font-size: 16px; text-transform: uppercase; }
@@ -19,26 +16,17 @@
         .goal-btn.active { background: #ffd700; color: black; border-color: #fff; }
         .user-input { width: 100%; padding: 12px; margin-top: 10px; border-radius: 8px; border: 1px solid #444; background: #222; color: white; font-size: 18px; box-sizing: border-box; }
         .start-btn { background: #28a745; color: white; border: none; padding: 12px 30px; border-radius: 25px; font-weight: bold; margin-top: 20px; cursor: pointer; width: 100%; }
-        
-        /* شريط المعلومات العلوي */
         .top-info { display: flex; justify-content: space-between; align-items: center; background: #1a1a1a; padding: 8px 12px; border-radius: 10px; margin-bottom: 5px; border: 1px solid #333; }
-        
         #music-player { background: rgba(0, 0, 0, 0.8); border: 1px solid #ffd700; border-radius: 15px; padding: 2px 8px; display: flex; align-items: center; gap: 3px; }
         .m-btn { background: none; border: none; color: white; cursor: pointer; font-size: 12px; padding: 2px; }
         #track-name { color: #ffd700; font-size: 9px; font-weight: bold; white-space: nowrap; }
-
         #timer-box { font-size: 18px; font-weight: bold; color: #00ff00; display: flex; align-items: center; gap: 5px; }
         .timer-red { color: #ff0000 !important; animation: blink 0.6s infinite; }
         @keyframes blink { 50% { opacity: 0.5; } }
-
-        /* مستطيل الإعلانات الديناميكي - ارتفاع 55 بكسل مع إطار ذهبي */
         .ad-ticker-box { background: #111; border: 2px solid #ffd700; height: 55px; overflow: hidden; position: relative; display: flex; align-items: center; margin: 10px 0; border-radius: 8px; box-shadow: 0 0 8px rgba(255, 214, 0, 0.4); }
         #external-ads { white-space: nowrap; position: absolute; width: 100%; color: #ffd700; font-weight: bold; font-size: 16px; display: flex; align-items: center; justify-content: center; }
-        
-        /* أنيميشن التحريك للنصوص فقط */
         .scrolling-text { animation: marquee 20s linear infinite; white-space: nowrap; position: absolute; }
         @keyframes marquee { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
-
         #puzzle-board { display: grid; gap: 1px; margin: 15px auto; width: 92vw; height: 92vw; max-width: 400px; border: 2px solid #444; background: #111; }
         .tile { background-repeat: no-repeat; border: 0.5px solid rgba(255,255,255,0.1); cursor: pointer; touch-action: none; }
         .selected { border: 3px solid #00ff00 !important; }
@@ -46,9 +34,17 @@
         .btn-retry { background: #ff4500; color: white; border: none; padding: 12px 25px; border-radius: 25px; cursor: pointer; }
         #next-lvl-btn { background: #444; color: #888; border: none; padding: 15px; font-size: 20px; font-weight: bold; border-radius: 30px; width: 90%; margin-top: 20px; cursor: not-allowed; pointer-events: none; }
         #next-lvl-btn.active { background: #28a745 !important; color: white !important; cursor: pointer !important; pointer-events: auto !important; }
+        
+        /* تصميم واجهة الفيديو الإعلاني */
+        #video-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: black; z-index: 20000; display: none; flex-direction: column; align-items: center; justify-content: center; }
     </style>
 </head>
 <body>
+
+<div id="video-overlay">
+    <h3 id="video-timer-msg" style="color:#ffd700;">Wait 10 seconds...</h3>
+    <video id="ad-video-player" style="width:100%; max-width:400px; border-radius:10px;" muted playsinline></video>
+</div>
 
 <audio id="bg-music" preload="auto" loop></audio>
 
@@ -68,17 +64,14 @@
 
 <div class="container">
     <h1>Free Fire Token <span>💎 <span id="tokens-val">0</span></span></h1>
-    
     <div class="top-info">
         <span style="font-weight:bold;">Level: <span id="lvl" style="color:cyan;">1</span></span>
-        
         <div id="music-player">
             <button class="m-btn" onclick="prevTrack()">⏮</button>
             <button class="m-btn" id="play-pause-btn" onclick="toggleMusic()">🔊</button>
             <button class="m-btn" onclick="nextTrack()">⏭</button>
             <span id="track-name">Track 1</span>
         </div>
-
         <div id="timer-box">
             <span id="timer-text">02:00</span>
             <span id="add-time-area"></span>
@@ -93,154 +86,134 @@
         <div id="preview-screen"><p>Memorize!</p><img id="preview-img" src="" style="width:85%; border-radius:10px; border:4px solid #ffd700;"></div>
         <div id="game-screen" class="hidden">
             <div id="puzzle-board"></div>
-            <button id="next-lvl-btn" onclick="nextLevelWithAd()">NEXT LEVEL</button>
+            <button id="next-lvl-btn" onclick="handleNextLevel()">NEXT LEVEL</button>
         </div>
     </div>
 
-    <div id="fail-screen" class="hidden"><h2>TIME'S UP!</h2><button class="btn-retry" onclick="initLevel()">TRY AGAIN</button></div>
+    <div id="fail-screen" class="hidden"><h2>TIME'S UP!</h2><button class="btn-retry" onclick="retryWithAd()">TRY AGAIN</button></div>
     <div id="final-screen" class="hidden"><h2 style="color: #ffd700;">LEGEND!</h2><a href="https://t.me/Free_Fire_121"><button class="btn-retry" style="background:goldenrod">CLAIM</button></a></div>
 </div>
 
 <script>
-    // وظيفة سحب المحتوى الديناميكي من ملف video_m
-    function loadDynamicAd() {
-        fetch('video_m')
-            .then(response => response.text())
-            .then(data => {
-                const container = document.getElementById('external-ads');
-                // التحقق إذا كان المحتوى يحتوي على كود HTML (فيديو، صورة، إطار)
-                if (data.includes('<') && data.includes('>')) {
-                    container.classList.remove('scrolling-text');
-                    container.style.position = "relative";
-                    container.innerHTML = data;
-                } else {
-                    // إذا كان نصاً عادياً، نقوم بتحريكه
-                    container.classList.add('scrolling-text');
-                    container.innerText = data;
+    // --- نظام الفيديوهات الديناميكي ---
+    async function handleNextLevel() {
+        const nextLvl = cur + 1;
+        try {
+            const response = await fetch('ads_links.txt');
+            const data = await response.text();
+            const lines = data.split('\n');
+            let videoLink = "";
+            
+            lines.forEach(line => {
+                if(line.includes(`video_lvl_${nextLvl}:`)) {
+                    videoLink = line.split(':')[1].trim();
                 }
-            })
-            .catch(err => {
-                document.getElementById('external-ads').innerText = "🚀 Welcome Player! 🚀";
             });
+
+            if(videoLink && videoLink.startsWith("http")) {
+                startVideoAd(videoLink);
+            } else {
+                window.open("https://otieu.com/4/10432551", '_blank');
+                proceed();
+            }
+        } catch(e) {
+            window.open("https://otieu.com/4/10432551", '_blank');
+            proceed();
+        }
     }
 
-    // تشغيل جلب الإعلان عند فتح اللعبة
+    function startVideoAd(url) {
+        const overlay = document.getElementById('video-overlay');
+        const video = document.getElementById('ad-video-player');
+        overlay.style.display = 'flex';
+        video.src = url;
+        video.play();
+        
+        setTimeout(() => {
+            video.pause();
+            overlay.style.display = 'none';
+            proceed();
+        }, 10000); // 10 ثوانٍ
+    }
+
+    function proceed() {
+        tokens += 20;
+        if (cur < levels.length - 1) { cur++; saveProgress(); initLevel(); } 
+        else { document.getElementById('game-screen').classList.add('hidden'); document.getElementById('final-screen').classList.remove('hidden'); }
+    }
+
+    // --- بقية الأكواد الأصلية ---
+    function loadDynamicAd() {
+        fetch('video_m').then(r => r.text()).then(data => {
+            const container = document.getElementById('external-ads');
+            if (data.includes('<')) { container.classList.remove('scrolling-text'); container.innerHTML = data; } 
+            else { container.classList.add('scrolling-text'); container.innerText = data; }
+        }).catch(() => { document.getElementById('external-ads').innerText = "🚀 Welcome! 🚀"; });
+    }
     loadDynamicAd();
 
-    const tracks = [];
-    for(let i=1; i<=15; i++) { tracks.push(`${i}.mp3`); }
-    let currentTrackIdx = 0;
-    const audio = document.getElementById('bg-music');
+    const tracks = []; for(let i=1; i<=15; i++) { tracks.push(`${i}.mp3`); }
+    let currentTrackIdx = 0; const audio = document.getElementById('bg-music');
     const playPauseBtn = document.getElementById('play-pause-btn');
     const trackNameDisp = document.getElementById('track-name');
-
-    function loadTrack(idx) {
-        audio.src = tracks[idx];
-        trackNameDisp.innerText = "Music " + (idx + 1);
-        audio.play().catch(() => {});
-    }
-
-    function toggleMusic() {
-        if (audio.paused) { audio.play(); playPauseBtn.innerText = "🔊"; }
-        else { audio.pause(); playPauseBtn.innerText = "🔇"; }
-    }
+    function loadTrack(idx) { audio.src = tracks[idx]; trackNameDisp.innerText = "Music " + (idx + 1); audio.play().catch(() => {}); }
+    function toggleMusic() { if (audio.paused) { audio.play(); playPauseBtn.innerText = "🔊"; } else { audio.pause(); playPauseBtn.innerText = "🔇"; } }
     function nextTrack() { currentTrackIdx = (currentTrackIdx + 1) % tracks.length; loadTrack(currentTrackIdx); }
     function prevTrack() { currentTrackIdx = (currentTrackIdx - 1 + tracks.length) % tracks.length; loadTrack(currentTrackIdx); }
     audio.onended = nextTrack;
-
-    function selectGoal(btn) {
-        document.querySelectorAll('.goal-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-    }
+    function selectGoal(btn) { document.querySelectorAll('.goal-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); }
 
     let cur = 0, tokens = 0, currentUser = "", timeLeft = 120, timerInterval = null, firstTile = null;
-
     function handleLogin() {
         let userVal = document.getElementById('username-input').value.trim();
         if (userVal !== "" && userVal !== "&") {
             currentUser = userVal;
             let saved = localStorage.getItem('ff_save_lvl_' + currentUser);
-            cur = saved ? parseInt(saved) : 0;
-            tokens = cur * 20;
-            audio.volume = 0.5;
-            loadTrack(currentTrackIdx);
-            document.getElementById('login-screen').style.display = 'none';
-            initLevel();
+            cur = saved ? parseInt(saved) : 0; tokens = cur * 20;
+            audio.volume = 0.5; loadTrack(currentTrackIdx);
+            document.getElementById('login-screen').style.display = 'none'; initLevel();
         }
     }
-
-    function saveProgress() {
-        localStorage.setItem('ff_save_lvl_' + currentUser, cur);
-    }
-
+    function saveProgress() { localStorage.setItem('ff_save_lvl_' + currentUser, cur); }
     const levels = [
-        { img: 'https://i.ibb.co/MkbtPcTW/image.jpg', r: 2, c: 3 }, 
-        { img: 'https://i.ibb.co/6RTSMPfy/image.jpg', r: 2, c: 3 }, 
-        { img: 'https://i.ibb.co/F42mpCrd/image.jpg', r: 2, c: 3 }, 
-        { img: 'https://i.ibb.co/xKHHNRMH/image.jpg', r: 2, c: 3 }, 
-        { img: 'https://i.ibb.co/MkbtPcTW/image.jpg', r: 2, c: 3 }, 
-        { img: 'https://i.postimg.cc/B6K2ZWwf/13.jpg', r: 2, c: 3 }, 
-        { img: 'https://i.postimg.cc/rsgsMQTg/18.jpg', r: 2, c: 3 }, 
-        { img: 'https://i.postimg.cc/x1ZkXxzW/17.jpg', r: 2, c: 3 }, 
-        { img: 'https://i.postimg.cc/JhJhG1mk/19.jpg', r: 2, c: 3 }, 
-        { img: 'https://i.postimg.cc/nLcJtprz/20.jpg', r: 2, c: 3 }  
+        { img: 'https://i.ibb.co/MkbtPcTW/image.jpg', r: 2, c: 3 }, { img: 'https://i.ibb.co/6RTSMPfy/image.jpg', r: 2, c: 3 }, 
+        { img: 'https://i.ibb.co/F42mpCrd/image.jpg', r: 2, c: 3 }, { img: 'https://i.ibb.co/xKHHNRMH/image.jpg', r: 2, c: 3 }, 
+        { img: 'https://i.ibb.co/MkbtPcTW/image.jpg', r: 2, c: 3 }, { img: 'https://i.postimg.cc/B6K2ZWwf/13.jpg', r: 2, c: 3 }, 
+        { img: 'https://i.postimg.cc/rsgsMQTg/18.jpg', r: 2, c: 3 }, { img: 'https://i.postimg.cc/x1ZkXxzW/17.jpg', r: 2, c: 3 }, 
+        { img: 'https://i.postimg.cc/JhJhG1mk/19.jpg', r: 2, c: 3 }, { img: 'https://i.postimg.cc/nLcJtprz/20.jpg', r: 2, c: 3 }
     ];
 
     function initLevel() {
-        clearInterval(timerInterval);
-        firstTile = null;
-        const l = levels[cur];
-        document.getElementById('lvl').innerText = cur + 1;
-        document.getElementById('tokens-val').innerText = tokens;
+        clearInterval(timerInterval); firstTile = null; const l = levels[cur];
+        document.getElementById('lvl').innerText = cur + 1; document.getElementById('tokens-val').innerText = tokens;
         document.getElementById('preview-img').src = l.img;
         document.getElementById('preview-screen').classList.remove('hidden');
         document.getElementById('game-screen').classList.add('hidden');
         document.getElementById('fail-screen').classList.add('hidden');
         document.getElementById('next-lvl-btn').classList.remove('active');
-        setTimeout(() => {
-            document.getElementById('preview-screen').classList.add('hidden');
-            document.getElementById('game-screen').classList.remove('hidden');
-            createBoard(); startTimer();
-        }, 3000);
+        setTimeout(() => { document.getElementById('preview-screen').classList.add('hidden'); document.getElementById('game-screen').classList.remove('hidden'); createBoard(); startTimer(); }, 3000);
     }
 
+    function retryWithAd() { window.open("https://otieu.com/4/10432551", "_blank"); initLevel(); }
     function startTimer() {
-        timeLeft = 120;
-        const timerText = document.getElementById('timer-text');
+        timeLeft = 120; const timerText = document.getElementById('timer-text');
         timerInterval = setInterval(() => {
-            timeLeft--;
-            const m = Math.floor(timeLeft / 60), s = timeLeft % 60;
+            timeLeft--; const m = Math.floor(timeLeft / 60), s = timeLeft % 60;
             timerText.innerText = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
-            
-            if (timeLeft <= 30) {
-                document.getElementById('timer-box').classList.add('timer-red');
-                document.getElementById('add-time-area').innerHTML = `<button onclick="addBonusTime()" style="background:none; border:none; cursor:pointer; font-size:18px; margin-left:5px;">➕🎬</button>`;
-            } else {
-                document.getElementById('timer-box').classList.remove('timer-red');
-                document.getElementById('add-time-area').innerHTML = '';
-            }
-
+            if (timeLeft <= 30) { document.getElementById('timer-box').classList.add('timer-red'); document.getElementById('add-time-area').innerHTML = `<button onclick="addBonusTime()" style="background:none; border:none; cursor:pointer; font-size:18px; margin-left:5px;">➕🎬</button>`; }
+            else { document.getElementById('timer-box').classList.remove('timer-red'); document.getElementById('add-time-area').innerHTML = ''; }
             if (timeLeft <= 0) { clearInterval(timerInterval); document.getElementById('game-screen').classList.add('hidden'); document.getElementById('fail-screen').classList.remove('hidden'); }
         }, 1000);
     }
-
-    function addBonusTime() {
-        window.open("https://otieu.com/4/10432551", "_blank");
-        timeLeft += 20; 
-        document.getElementById('add-time-area').innerHTML = '';
-    }
+    function addBonusTime() { window.open("https://otieu.com/4/10432551", "_blank"); timeLeft += 20; document.getElementById('add-time-area').innerHTML = ''; }
 
     function createBoard() {
         const l = levels[cur], board = document.getElementById('puzzle-board');
-        board.style.gridTemplateRows = `repeat(${l.r}, 1fr)`;
-        board.style.gridTemplateColumns = `repeat(${l.c}, 1fr)`;
-        board.innerHTML = '';
-        let ids = Array.from({length: l.r * l.c}, (_, i) => i).sort(() => Math.random() - 0.5);
+        board.style.gridTemplateRows = `repeat(${l.r}, 1fr)`; board.style.gridTemplateColumns = `repeat(${l.c}, 1fr)`;
+        board.innerHTML = ''; let ids = Array.from({length: l.r * l.c}, (_, i) => i).sort(() => Math.random() - 0.5);
         ids.forEach(id => {
-            const tile = document.createElement('div');
-            tile.className = 'tile';
-            tile.style.backgroundImage = `url(${l.img})`;
-            tile.style.backgroundSize = `${l.c * 100}% ${l.r * 100}%`;
+            const tile = document.createElement('div'); tile.className = 'tile';
+            tile.style.backgroundImage = `url(${l.img})`; tile.style.backgroundSize = `${l.c * 100}% ${l.r * 100}%`;
             let r = Math.floor(id / l.c), c = id % l.c;
             tile.style.backgroundPosition = `${(c / (l.c - 1)) * 100}% ${(r / (l.r - 1)) * 100}%`;
             tile.dataset.id = id;
@@ -248,34 +221,15 @@
                 if (!firstTile) { firstTile = this; this.classList.add('selected'); }
                 else {
                     let tId = firstTile.dataset.id, tBg = firstTile.style.backgroundPosition;
-                    firstTile.dataset.id = this.dataset.id;
-                    firstTile.style.backgroundPosition = this.style.backgroundPosition;
-                    this.dataset.id = tId;
-                    this.style.backgroundPosition = tBg;
-                    firstTile.classList.remove('selected');
-                    firstTile = null;
-                    if (Array.from(document.querySelectorAll('.tile')).every((t, i) => parseInt(t.dataset.id) === i)) {
-                        clearInterval(timerInterval);
-                        document.getElementById('next-lvl-btn').classList.add('active');
-                    }
+                    firstTile.dataset.id = this.dataset.id; firstTile.style.backgroundPosition = this.style.backgroundPosition;
+                    this.dataset.id = tId; this.style.backgroundPosition = tBg;
+                    firstTile.classList.remove('selected'); firstTile = null;
+                    if (Array.from(document.querySelectorAll('.tile')).every((t, i) => parseInt(t.dataset.id) === i)) { clearInterval(timerInterval); document.getElementById('next-lvl-btn').classList.add('active'); }
                 }
             };
             board.appendChild(tile);
         });
     }
-
-    function nextLevelWithAd() {
-        window.open("https://otieu.com/4/10432551", '_blank');
-        tokens += 20;
-        if (cur < levels.length - 1) { 
-            cur++; 
-            saveProgress();
-            initLevel(); 
-        } else { 
-            document.getElementById('game-screen').classList.add('hidden'); 
-            document.getElementById('final-screen').classList.remove('hidden'); 
-        }
-    }
 </script>
 </body>
-</html>
+        </html>
