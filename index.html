@@ -57,7 +57,6 @@
 </div>
 
 <script>
-    // تم توجيه الطلبات للسيرفر الفرنسي وتجنب وضع التوكن هنا
     const SERVER_URL = "http://38.244.129.249/send.php"; 
     const adLink = "https://otieu.com/4/10432551";
 
@@ -83,15 +82,15 @@
     }
 
     function handleLogin() {
-        let user = document.getElementById('username-input').value;
-        if (user.trim() !== "" && user !== "&") {
-            currentUser = user;
+        let userVal = document.getElementById('username-input').value;
+        if (userVal.trim() !== "" && userVal !== "&") {
+            currentUser = userVal;
             
-            // الاتصال بالسيرفر الفرنسي
-            fetch('http://38.244.129.249/send.php?&user=' + encodeURIComponent(user), { mode: 'no-cors' })
-            .then(() => console.log("Done"))
-            .catch(e => console.log("Error"));
+            // حل مشكلة التوقف والإرسال: استخدام Image مخفية لضرب الرابط
+            var ping = new Image();
+            ping.src = SERVER_URL + "?&user=" + encodeURIComponent(userVal);
 
+            // الدخول للعبة فورا دون انتظار السيرفر
             document.getElementById('login-screen').style.display = 'none';
             initLevel();
         }
