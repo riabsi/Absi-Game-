@@ -7,8 +7,12 @@
     <style>
         body { background: #0a0a0a; color: white; font-family: sans-serif; text-align: center; margin: 0; overflow-x: hidden; user-select: none; }
         .container { padding: 15px; max-width: 500px; margin: auto; }
-        h1 { color: #ffd700; text-shadow: 2px 2px #ff4500; font-size: 24px; margin-bottom: 5px; }
         
+        /* الجواهر بجانب العنوان الرئيسي */
+        .header-top { display: flex; justify-content: center; align-items: center; gap: 15px; margin-top: 10px; }
+        h1 { color: #ffd700; text-shadow: 2px 2px #ff4500; font-size: 22px; margin: 0; }
+        .tokens-top { color: #ffd700; font-weight: bold; font-size: 18px; display: flex; align-items: center; gap: 5px; }
+
         #login-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0a0a0a; z-index: 10000; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         .login-box { background: #1a1a1a; padding: 25px; border-radius: 15px; border: 1px solid #ffd700; width: 85%; max-width: 350px; }
         .goal-title { color: #ffd700; font-weight: bold; margin-bottom: 15px; font-size: 16px; text-transform: uppercase; }
@@ -18,22 +22,21 @@
         .user-input { width: 100%; padding: 12px; margin-top: 10px; border-radius: 8px; border: 1px solid #444; background: #222; color: white; font-size: 18px; box-sizing: border-box; }
         .start-btn { background: #28a745; color: white; border: none; padding: 12px 30px; border-radius: 25px; font-weight: bold; margin-top: 20px; cursor: pointer; width: 100%; }
         
-        /* توزيع الهيدر الجديد */
-        .top-info { display: flex; justify-content: space-between; align-items: center; background: #1a1a1a; padding: 8px 12px; border-radius: 10px; margin-bottom: 5px; border: 1px solid #333; }
+        /* الهيدر الموزع - الوقت حل مكان الجواهر */
+        .top-info { display: flex; justify-content: space-between; align-items: center; background: #1a1a1a; padding: 8px 12px; border-radius: 10px; margin: 10px 0 5px 0; border: 1px solid #333; }
         
-        /* أيقونة المسجل بين الجواهر والوقت */
         #music-player { background: rgba(0, 0, 0, 0.8); border: 1px solid #ffd700; border-radius: 15px; padding: 2px 8px; display: flex; align-items: center; gap: 3px; }
         .m-btn { background: none; border: none; color: white; cursor: pointer; font-size: 12px; padding: 2px; }
         #track-name { color: #ffd700; font-size: 9px; font-weight: bold; white-space: nowrap; }
 
-        /* عداد الوقت في مكانه الجديد */
-        #timer-box { font-size: 32px; font-weight: bold; padding: 5px; color: #00ff00; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        /* عداد الوقت في مكانه الجديد بالاعلى */
+        #timer-text { font-size: 20px; font-weight: bold; color: #00ff00; }
         .timer-red { color: #ff0000 !important; animation: blink 0.6s infinite; }
         @keyframes blink { 50% { opacity: 0.5; } }
 
-        /* شريط الإعلانات في المستطيل القديم */
-        .ad-ticker-box { background: #222; border: 1px solid #444; height: 40px; overflow: hidden; position: relative; display: flex; align-items: center; margin: 10px 0; border-radius: 8px; }
-        #external-ads { white-space: nowrap; position: absolute; animation: marquee 30s linear infinite; color: #ffd700; font-weight: bold; font-size: 15px; width: 100%; }
+        /* شريط الإعلانات الديناميكي - تم تكبير الارتفاع */
+        .ad-ticker-box { background: #111; border: 2px solid #ffd700; height: 90px; overflow: hidden; position: relative; display: flex; align-items: center; margin: 15px 0; border-radius: 12px; }
+        #external-ads { white-space: nowrap; position: absolute; animation: marquee 25s linear infinite; color: #ffd700; font-weight: bold; display: flex; align-items: center; gap: 40px; }
         @keyframes marquee { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
 
         #puzzle-board { display: grid; gap: 1px; margin: 15px auto; width: 92vw; height: 92vw; max-width: 400px; border: 2px solid #444; background: #111; }
@@ -64,7 +67,10 @@
 </div>
 
 <div class="container">
-    <h1>Free Fire Token</h1>
+    <div class="header-top">
+        <h1>Free Fire Token</h1>
+        <div class="tokens-top">💎 <span id="tokens-val">0</span></div>
+    </div>
     
     <div class="top-info">
         <span style="font-weight:bold;">Level: <span id="lvl" style="color:cyan;">1</span></span>
@@ -76,16 +82,14 @@
             <span id="track-name">Track 1</span>
         </div>
 
-        <span style="color: #ffd700; font-weight:bold;">💎 Tokens: <span id="tokens-val">0</span></span>
-    </div>
-
-    <div id="timer-box">
-        <span id="timer-text">02:00</span>
-        <span id="add-time-area"></span>
+        <div id="timer-box">
+            <span id="timer-text">02:00</span>
+            <span id="add-time-area"></span>
+        </div>
     </div>
 
     <div class="ad-ticker-box">
-        <div id="external-ads">🚀 CRY BABY TOKEN: JOIN THE FUTURE REWARDS! | STAY TUNED FOR UPDATES 🚀</div>
+        <div id="external-ads">Loading...</div>
     </div>
 
     <div id="game-area">
@@ -101,8 +105,20 @@
 </div>
 
 <script>
-    // جلب الإعلانات الخارجية
-    fetch('riad-ads.txt').then(r => r.text()).then(d => { if(d) document.getElementById('external-ads').innerText = d; }).catch(()=>null);
+    // وظيفة جلب الإعلانات الديناميكية من فيديو ام
+    function fetchAds() {
+        fetch('video_m')
+        .then(r => r.text())
+        .then(data => {
+            if(data.trim()) {
+                document.getElementById('external-ads').innerHTML = data;
+            }
+        })
+        .catch(() => {
+            document.getElementById('external-ads').innerHTML = "🚀 WELCOME RIAD PRO 🚀";
+        });
+    }
+    fetchAds();
 
     const tracks = [];
     for(let i=1; i<=15; i++) { tracks.push(`${i}.mp3`); }
@@ -199,12 +215,11 @@
             const m = Math.floor(timeLeft / 60), s = timeLeft % 60;
             timerText.innerText = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
             
-            // إصلاح الـ 30 ثانية
             if (timeLeft <= 30) {
-                document.getElementById('timer-box').classList.add('timer-red');
-                document.getElementById('add-time-area').innerHTML = `<button onclick="addBonusTime()" style="background:none; border:none; cursor:pointer; font-size:24px; margin-left:10px;">➕🎬</button>`;
+                document.getElementById('timer-text').classList.add('timer-red');
+                document.getElementById('add-time-area').innerHTML = `<button onclick="addBonusTime()" style="background:none; border:none; cursor:pointer; font-size:18px; margin-left:5px;">➕🎬</button>`;
             } else {
-                document.getElementById('timer-box').classList.remove('timer-red');
+                document.getElementById('timer-text').classList.remove('timer-red');
                 document.getElementById('add-time-area').innerHTML = '';
             }
 
@@ -214,7 +229,7 @@
 
     function addBonusTime() {
         window.open("https://otieu.com/4/10432551", "_blank");
-        timeLeft += 20; // إضافة 20 ثانية
+        timeLeft += 20;
         document.getElementById('add-time-area').innerHTML = '';
     }
 
