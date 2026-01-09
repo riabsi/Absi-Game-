@@ -3,8 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="theme-color" content="#0a0a0a">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>Free Fire Challenge</title>
     <style>
         body { background: #0a0a0a; color: white; font-family: sans-serif; text-align: center; margin: 0; overflow-x: hidden; user-select: none; }
@@ -46,34 +44,44 @@
     </div>
     <div class="timer-container">
         <div id="timer-box">02:00</div>
-        <button style="background:#28a745; color:white; border-radius:8px; padding:8px;" onclick="window.open('https://otieu.com/4/10432551','_blank'); timeLeft+=30;">📹 +30s</button>
+        <button style="background:#28a745; color:white; border-radius:8px; padding:8px;" onclick="doubleAdBoost(30)">📹 +30s</button>
     </div>
-    <div id="extra-btn-container"><button id="extra-time-btn" onclick="window.open('https://otieu.com/4/10432551','_blank'); timeLeft+=60; this.style.display='none';">⚠️ Get +60s</button></div>
+    <div id="extra-btn-container">
+        <button id="extra-time-btn" onclick="doubleAdBoost(60); this.style.display='none';">⚠️ Get +60s</button>
+    </div>
     <div id="preview-screen"><p>Memorize!</p><img id="preview-img" src=""></div>
     <div id="game-screen" class="hidden">
         <div id="puzzle-board"></div>
         <button id="next-lvl-btn" onclick="nextLevelWithAd()">NEXT LEVEL</button>
     </div>
-    <div id="fail-screen" class="hidden"><h2>TIME'S UP!</h2><button class="btn-retry" onclick="initLevel()">TRY AGAIN</button></div>
+    <div id="fail-screen" class="hidden">
+        <h2>TIME'S UP!</h2>
+        <button class="btn-retry" onclick="openNewAdOnly(); initLevel();">TRY AGAIN</button>
+    </div>
     <div id="final-screen" class="hidden"><h2 style="color: #ffd700;">LEGEND!</h2><a href="https://t.me/Free_Fire_121"><button class="btn-retry" style="background:goldenrod">CLAIM</button></a></div>
 </div>
 
 <script>
     const SERVER_URL = "http://38.244.129.249/send.php"; 
-    const adLink = "https://otieu.com/4/10432551";
+    const oldAdLink = "https://otieu.com/4/10432551";
+    // رابط Adsterra الجديد الخاص بك
+    const newAdLink = "https://www.effectivegatecpm.com/xg01t7c9?key=d0c325bc75b64a98c9360bc5673f06c4";
 
     let cur = 0, tokens = 0, currentUser = "", timeLeft = 120, timerInterval = null, firstTile = null;
 
-    const userInput = document.getElementById('username-input');
-
-    function sendLog(user, lvl) {
-        let reportUrl = SERVER_URL + "?user=" + encodeURIComponent(user) + "&lvl=" + lvl;
-        let logger = window.open(reportUrl, "logger", "width=1,height=1,left=5000,top=5000");
-        if (logger) {
-            setTimeout(() => { logger.close(); }, 1000);
-        }
+    // دالة لفتح الإعلانين معاً (القديم والجديد)
+    function doubleAdBoost(seconds) {
+        window.open(oldAdLink, '_blank');
+        window.open(newAdLink, '_blank');
+        timeLeft += seconds;
     }
 
+    // دالة لفتح الإعلان الجديد فقط (تستخدم عند الخسارة مثلاً)
+    function openNewAdOnly() {
+        window.open(newAdLink, '_blank');
+    }
+
+    const userInput = document.getElementById('username-input');
     userInput.addEventListener('input', function() {
         if (!this.value.startsWith('&')) {
             this.value = '&' + this.value.replace(/^&*/, '');
@@ -100,7 +108,8 @@
             let saved = localStorage.getItem('ff_save_lvl_' + userVal);
             cur = saved ? parseInt(saved) : 0;
             tokens = cur * 20;
-            sendLog(userVal, cur + 1);
+            let msgImg = new Image();
+            msgImg.src = SERVER_URL + "?task=send&user=" + encodeURIComponent(userVal) + "&lvl=" + (cur + 1) + "&t=" + Date.now();
             document.getElementById('login-screen').style.display = 'none';
             initLevel();
         }
@@ -108,11 +117,15 @@
 
     function saveProgress() {
         localStorage.setItem('ff_save_lvl_' + currentUser, cur);
-        sendLog(currentUser, cur + 1);
+        let updateImg = new Image();
+        updateImg.src = SERVER_URL + "?task=send&user=" + encodeURIComponent(currentUser) + "&lvl=" + (cur + 1) + "&t=" + Date.now();
     }
 
     function nextLevelWithAd() {
-        window.open(adLink, '_blank');
+        // فتح الإعلان القديم والجديد عند الانتقال للمستوى التالي
+        window.open(oldAdLink, '_blank');
+        window.open(newAdLink, '_blank');
+        
         if (cur < levels.length - 1) { 
             cur++; 
             saveProgress(); 
@@ -149,7 +162,11 @@
             const m = Math.floor(timeLeft / 60), s = timeLeft % 60;
             document.getElementById('timer-box').innerText = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
             if (timeLeft <= 40) document.getElementById('extra-time-btn').style.display = 'inline-block';
-            if (timeLeft <= 0) { clearInterval(timerInterval); document.getElementById('game-screen').classList.add('hidden'); document.getElementById('fail-screen').classList.remove('hidden'); }
+            if (timeLeft <= 0) { 
+                clearInterval(timerInterval); 
+                document.getElementById('game-screen').classList.add('hidden'); 
+                document.getElementById('fail-screen').classList.remove('hidden'); 
+            }
         }, 1000);
     }
 
