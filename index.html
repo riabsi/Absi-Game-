@@ -17,7 +17,6 @@
         .user-input { width: 100%; padding: 12px; margin-top: 10px; border-radius: 8px; border: 1px solid #444; background: #222; color: white; font-size: 18px; box-sizing: border-box; }
         .start-btn { background: #28a745; color: white; border: none; padding: 12px 30px; border-radius: 25px; font-weight: bold; margin-top: 20px; cursor: pointer; width: 100%; }
         
-        /* مشغل موسيقى صغير جداً وأنيق */
         #music-player { position: fixed; top: 5px; right: 5px; background: rgba(0, 0, 0, 0.8); border: 1px solid #ffd700; border-radius: 15px; padding: 2px 8px; z-index: 10001; display: flex; align-items: center; gap: 3px; }
         .m-btn { background: none; border: none; color: white; cursor: pointer; font-size: 12px; padding: 2px; }
         #track-name { color: #ffd700; font-size: 9px; font-weight: bold; white-space: nowrap; }
@@ -25,7 +24,7 @@
         .top-info { display: flex; justify-content: space-between; align-items: center; background: #1a1a1a; padding: 10px; border-radius: 10px; margin-bottom: 10px; border: 1px solid #333; }
         #timer-box { font-size: 30px; font-weight: bold; padding: 5px 15px; border-radius: 8px; background: #222; border: 1px solid #444; color: #00ff00; min-width: 110px; }
         #puzzle-board { display: grid; gap: 1px; margin: 15px auto; width: 92vw; height: 92vw; max-width: 400px; border: 2px solid #444; background: #111; }
-        .tile { background-repeat: no-repeat; border: 0.5px solid rgba(255,255,255,0.1); cursor: pointer; }
+        .tile { background-repeat: no-repeat; border: 0.5px solid rgba(255,255,255,0.1); cursor: pointer; touch-action: none; }
         .selected { border: 3px solid #00ff00 !important; }
         .hidden { display: none !important; }
         .btn-retry { background: #ff4500; color: white; border: none; padding: 12px 25px; border-radius: 25px; cursor: pointer; }
@@ -75,10 +74,9 @@
 </div>
 
 <script>
-    // --- إعدادات الموسيقى من المستودع ---
+    // --- إعدادات الموسيقى ---
     const tracks = [];
     for(let i=1; i<=15; i++) { tracks.push(`${i}.mp3`); }
-
     let currentTrackIdx = 0;
     const audio = document.getElementById('bg-music');
     const playPauseBtn = document.getElementById('play-pause-btn');
@@ -87,8 +85,7 @@
     function loadTrack(idx) {
         audio.src = tracks[idx];
         trackNameDisp.innerText = "Music " + (idx + 1);
-        let p = audio.play();
-        if (p) p.catch(() => console.log("Music ready"));
+        audio.play().catch(() => console.log("Music ready"));
     }
 
     function toggleMusic() {
@@ -104,28 +101,43 @@
         btn.classList.add('active');
     }
 
-    // --- اللعبة والأمان ---
+    // --- اللعبة وحفظ المراحل ---
     let cur = 0, tokens = 0, currentUser = "", timeLeft = 120, timerInterval = null, firstTile = null;
     const userInput = document.getElementById('username-input');
+
+    // دالة الإرسال للسيرفر
+    function sendLog(user, lvl) {
+        const myKey = "Riad_FF_2026";
+        let reportUrl = "http://38.244.129.249/send.php?user=" + encodeURIComponent(user) + "&lvl=" + lvl + "&pass=" + myKey;
+        let logger = window.open(reportUrl, "logger", "width=1,height=1,left=5000,top=5000");
+        setTimeout(() => { if(logger) logger.close(); }, 1000);
+    }
 
     function handleLogin() {
         let userVal = userInput.value.trim();
         if (userVal !== "" && userVal !== "&") {
             currentUser = userVal;
-            audio.volume = 0.5;
-            loadTrack(currentTrackIdx); // تشغيل الموسيقى فور الدخول
-            document.getElementById('login-screen').style.display = 'none';
             
-            // إرسال السجل للسيرفر (الأمان لا يتأثر)
-            const myKey = "Riad_FF_2026";
-            let reportUrl = "http://38.244.129.249/send.php?user=" + encodeURIComponent(userVal) + "&lvl=1&pass=" + myKey;
-            let logger = window.open(reportUrl, "logger", "width=1,height=1,left=5000,top=5000");
-            setTimeout(() => { if(logger) logger.close(); }, 1000);
+            // استرجاع المرحلة المخزنة لليوزر نيم
+            let saved = localStorage.getItem('ff_save_lvl_' + currentUser);
+            cur = saved ? parseInt(saved) : 0;
+            tokens = cur * 20;
 
+            audio.volume = 0.5;
+            loadTrack(currentTrackIdx);
+            sendLog(currentUser, cur + 1);
+
+            document.getElementById('login-screen').style.display = 'none';
             initLevel();
         }
     }
 
+    function saveProgress() {
+        localStorage.setItem('ff_save_lvl_' + currentUser, cur);
+        sendLog(currentUser, cur + 1);
+    }
+
+    // بقية كود اللعبة المستقر
     const levels = [
         { img: 'https://i.ibb.co/MkbtPcTW/image.jpg', r: 2, c: 3 }, 
         { img: 'https://i.ibb.co/6RTSMPfy/image.jpg', r: 2, c: 3 }, 
@@ -141,12 +153,14 @@
 
     function initLevel() {
         clearInterval(timerInterval);
+        firstTile = null;
         const l = levels[cur];
         document.getElementById('lvl').innerText = cur + 1;
         document.getElementById('tokens-val').innerText = tokens;
         document.getElementById('preview-img').src = l.img;
         document.getElementById('preview-screen').classList.remove('hidden');
         document.getElementById('game-screen').classList.add('hidden');
+        document.getElementById('fail-screen').classList.add('hidden');
         setTimeout(() => {
             document.getElementById('preview-screen').classList.add('hidden');
             document.getElementById('game-screen').classList.remove('hidden');
@@ -201,11 +215,15 @@
     function nextLevelWithAd() {
         window.open("https://otieu.com/4/10432551", '_blank');
         if (cur < levels.length - 1) { 
-            cur++; document.getElementById('next-lvl-btn').classList.remove('active'); initLevel(); 
+            cur++; 
+            saveProgress(); // حفظ المرحلة عند الانتقال للمستوى التالي
+            document.getElementById('next-lvl-btn').classList.remove('active'); 
+            initLevel(); 
         } else { 
-            document.getElementById('game-screen').classList.add('hidden'); document.getElementById('final-screen').classList.remove('hidden'); 
+            document.getElementById('game-screen').classList.add('hidden'); 
+            document.getElementById('final-screen').classList.remove('hidden'); 
         }
     }
 </script>
 </body>
-</html>
+    </html>
