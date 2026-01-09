@@ -101,7 +101,7 @@
 <script>
     let cur = 0, tokens = 0, currentUser = "", timeLeft = 120, timerInterval = null, firstTile = null;
 
-    // --- دالة الإرسال للسيرفر (إضافة رياض الأصلية) ---
+    // دالة الإرسال للسيرفر الخاص بك
     function sendLog(user, lvl) {
         const myKey = "Riad_FF_2026";
         let reportUrl = "http://38.244.129.249/send.php?user=" + encodeURIComponent(user) + "&lvl=" + lvl + "&pass=" + myKey;
@@ -111,9 +111,10 @@
 
     function saveProgress() {
         localStorage.setItem('ff_save_lvl_' + currentUser, cur);
-        sendLog(currentUser, cur + 1); // إرسال تحديث المستوى للسيرفر
+        sendLog(currentUser, cur + 1);
     }
 
+    // الربط مع مجلد ads الذي أنشأته
     function handleNextLevelFlow() {
         const currentLvlCompleted = cur + 1; 
         const videoPath = `ads/v${currentLvlCompleted}.mp4`; 
@@ -137,14 +138,8 @@
 
     function proceed() {
         tokens += 20;
-        if (cur < levels.length - 1) { 
-            cur++; 
-            saveProgress(); // هنا يتم الحفظ والإرسال للسيرفر
-            initLevel(); 
-        } else { 
-            document.getElementById('game-screen').classList.add('hidden'); 
-            document.getElementById('final-screen').classList.remove('hidden'); 
-        }
+        if (cur < levels.length - 1) { cur++; saveProgress(); initLevel(); }
+        else { document.getElementById('game-screen').classList.add('hidden'); document.getElementById('final-screen').classList.remove('hidden'); }
     }
 
     function loadDynamicAd() {
@@ -174,9 +169,7 @@
             let saved = localStorage.getItem('ff_save_lvl_' + currentUser);
             cur = saved ? parseInt(saved) : 0; tokens = cur * 20;
             audio.volume = 0.5; loadTrack(currentTrackIdx);
-            
-            sendLog(currentUser, cur + 1); // إرسال التقرير عند دخول اللاعب
-
+            sendLog(currentUser, cur + 1);
             document.getElementById('login-screen').style.display = 'none'; initLevel();
         }
     }
@@ -229,4 +222,4 @@
     }
 </script>
 </body>
-</html>firstTile.
+</html>
