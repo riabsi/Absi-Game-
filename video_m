@@ -1,9 +1,11 @@
-<div style="display: flex; align-items: center; width: 100%; height: 55px; overflow: hidden;">
+<div style="display: flex; align-items: center; justify-content: space-between; padding: 0 10px; height: 55px; width: 100%; box-sizing: border-box;">
     
-    <img src="ضع_رابط_الصورة_هنا" style="height: 45px; margin-left: 10px; border-radius: 5px; z-index: 2;">
+    <img src="رابط_الصورة_الأولى" style="height: 35px; width: auto; object-fit: contain;">
 
-    <marquee direction="right" scrollamount="6" style="color: #ffd700; font-weight: bold; font-size: 18px; width: 100%;">
-    ترقبو الجديد لدينا قريبا  🚀💎🔥
-    </marquee>
+    <span style="color: #ffd700; font-weight: bold; font-size: 15px; text-align: center; flex-grow: 1;">
+        ترقبو الجديد لدينا قريباً 🚀
+    </span>
+
+    <img src="رابط_الصورة_الثانية" style="height: 35px; width: auto; object-fit: contain;">
 
 </div>
