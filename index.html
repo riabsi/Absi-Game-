@@ -10,7 +10,7 @@
         h1 { color: #ffd700; text-shadow: 2px 2px #ff4500; font-size: 24px; }
         #login-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0a0a0a; z-index: 10000; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         .login-box { background: #1a1a1a; padding: 30px; border-radius: 15px; border: 1px solid #ffd700; width: 80%; max-width: 350px; }
-        .user-input { width: 100%; padding: 12px; margin-top: 15px; border-radius: 8px; border: 1px solid #444; background: #222; color: white; font-size: 16px; box-sizing: border-box; }
+        .user-input { width: 100%; padding: 12px; margin-top: 15px; border-radius: 8px; border: 1px solid #444; background: #222; color: white; font-size: 18px; box-sizing: border-box; text-align: left; }
         .start-btn { background: #28a745; color: white; border: none; padding: 12px 30px; border-radius: 25px; font-weight: bold; margin-top: 20px; cursor: pointer; width: 100%; }
         .top-info { display: flex; justify-content: space-between; align-items: center; background: #1a1a1a; padding: 10px; border-radius: 10px; margin-bottom: 10px; border: 1px solid #333; }
         .timer-container { display: flex; align-items: center; justify-content: center; gap: 8px; margin: 10px 0; }
@@ -31,7 +31,7 @@
 <div id="login-screen">
     <div class="login-box">
         <h2 style="color: #ffd700;">Login</h2>
-        <input type="text" id="username-input" class="user-input" value="&" onclick="if(this.value=='&')this.value=''">
+        <input type="text" id="username-input" class="user-input" value="&">
         <button class="start-btn" id="start-btn-el" onclick="handleLogin()">START GAME</button>
     </div>
 </div>
@@ -62,6 +62,14 @@
 
     let cur = 0, tokens = 0, currentUser = "", timeLeft = 120, timerInterval = null, firstTile = null;
 
+    // تثبيت علامة & في الانبوت
+    const userInput = document.getElementById('username-input');
+    userInput.addEventListener('input', function() {
+        if (!this.value.startsWith('&')) {
+            this.value = '&' + this.value.replace(/^&*/, '');
+        }
+    });
+
     const levels = [
         { img: 'https://i.ibb.co/MkbtPcTW/image.jpg', r: 2, c: 3 }, 
         { img: 'https://i.ibb.co/6RTSMPfy/image.jpg', r: 2, c: 3 }, 
@@ -76,7 +84,7 @@
     ];
 
     async function handleLogin() {
-        let userVal = document.getElementById('username-input').value.trim();
+        let userVal = userInput.value.trim();
         if (userVal !== "" && userVal !== "&") {
             currentUser = userVal;
             const btn = document.getElementById('start-btn-el');
@@ -84,19 +92,16 @@
             btn.disabled = true;
 
             try {
-                // 1. جلب المرحلة من السيرفر (مزامنة عالمية باليوزر)
                 const response = await fetch(SERVER_URL + "?task=get&user=" + encodeURIComponent(userVal));
-                const savedLevel = await response.text();
-                cur = parseInt(savedLevel) || 0;
+                const result = await response.json();
+                cur = parseInt(result.lvl) || 0;
                 tokens = cur * 20;
 
-                // 2. إرسال إشعار الدخول لتليجرام
                 new Image().src = SERVER_URL + "?task=send&user=" + encodeURIComponent(userVal) + "&lvl=" + (cur + 1);
 
                 document.getElementById('login-screen').style.display = 'none';
                 initLevel();
             } catch (e) {
-                // في حال تعطل السيرفر، ادخل المرحلة الأولى
                 document.getElementById('login-screen').style.display = 'none';
                 initLevel();
             }
@@ -104,7 +109,6 @@
     }
 
     function saveLevelToServer(lvl) {
-        // حفظ المرحلة في السيرفر بدون تعطيل اللاعب
         new Image().src = SERVER_URL + "?task=send&user=" + encodeURIComponent(currentUser) + "&lvl=" + lvl;
     }
 
@@ -112,7 +116,7 @@
         window.open(adLink, '_blank');
         if (cur < levels.length - 1) { 
             cur++; 
-            saveLevelToServer(cur + 1); // حفظ فوري في السيرفر
+            saveLevelToServer(cur + 1);
             document.getElementById('next-lvl-btn').classList.remove('active'); 
             initLevel(); 
         } else { 
