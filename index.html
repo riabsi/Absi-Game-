@@ -4,6 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Free Fire Challenge</title>
+    <link rel="manifest" href="/manifest.json">
+    <script>
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/pwa-worker.js');
+      }
+    </script>
     <style>
         body { background: #0a0a0a; color: white; font-family: sans-serif; text-align: center; margin: 0; overflow-x: hidden; user-select: none; }
         .container { padding: 15px; max-width: 500px; margin: auto; }
@@ -208,7 +214,8 @@
         }, 1000);
     }
 
-    function addBonusTime() { window.open("https://otieu.com/4/10432551", "_blank"); timeLeft += 20; document.getElementById('add-time-area').innerHTML = ''; }
+    // تم تعديل الزيادة هنا لتصبح 30 ثانية
+    function addBonusTime() { window.open("https://otieu.com/4/10432551", "_blank"); timeLeft += 30; document.getElementById('add-time-area').innerHTML = ''; }
 
     function createBoard() {
         const l = levels[cur], board = document.getElementById('puzzle-board');
